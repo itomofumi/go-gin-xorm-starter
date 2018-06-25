@@ -1,11 +1,16 @@
+
+# make sure BIN_NAME value length is <= 13 charactors.
 BIN_NAME=starter-local
 BIN_NAME_PRODUCTION=starter
 
 BUILD_TAGS_PRODUCTION='production'
 BUILD_TAGS_DEVELOPMENT='development'
 
+prepare:
+	@if [ ! -e .env ]; then echo "\033[31m.env FILE NOT FOUND\033[0m\n \033[32m'cp .env.example .env'\033[0m to setup .env file." && exit 1; fi
+
 # スタートグループ
-start: dep
+start: prepare dep
 	nodemon -x "pkill $(BIN_NAME) & (make build-local || exit 1) && (./$(BIN_NAME) || exit 1)"
 
 # CI
