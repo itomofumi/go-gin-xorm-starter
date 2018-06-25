@@ -1,0 +1,12 @@
+### golang ###
+vendor/
+pkg/
+log/
+.env
+
+### output ###
+starter
+starter-local
+
+### log ###
+*.log

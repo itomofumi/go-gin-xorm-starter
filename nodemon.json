@@ -1,0 +1,7 @@
+
+{
+  "delay": "500",
+  "watch": [".", ".env"],
+  "ext": "go yml",
+  "ignore": ["testdata/*", "doc/*", "vendor/*", "*_test.go" ]
+}
