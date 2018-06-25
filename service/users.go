@@ -9,7 +9,7 @@ import (
 
 // UsersInterface はサポーター管理サービスです
 type UsersInterface interface {
-	Create(*model.User) (*model.UserPublicData, error)
+	Create(email string, profile *model.UserProfile) (*model.UserPublicData, error)
 	GetByID(uint64) (user *model.User, ok bool)
 	GetByEmail(email string) (user *model.User, ok bool)
 	Verify(userID uint64) error
@@ -29,10 +29,10 @@ func NewUsers(repo repository.UsersInterface) UsersInterface {
 }
 
 // Create はユーザを登録
-func (u *Users) Create(user *model.User) (*model.UserPublicData, error) {
+func (u *Users) Create(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
 
 	// 現在の登録状態を取得
-	currentUser, found := u.GetByEmail(user.Email)
+	currentUser, found := u.GetByEmail(email)
 
 	if found {
 		if currentUser.EmailVerified {
@@ -45,7 +45,7 @@ func (u *Users) Create(user *model.User) (*model.UserPublicData, error) {
 		}
 	}
 
-	return u.repo.Create(user.Email, &user.UserProfile)
+	return u.repo.Create(email, profile)
 }
 
 // GetByID は指定のユーザを取得します

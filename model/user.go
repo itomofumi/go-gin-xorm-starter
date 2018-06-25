@@ -38,6 +38,12 @@ type UserProfile struct {
 	AvatarURL   *string `json:"avatar_url"`
 }
 
+// UserCreateBody contains new user data.
+type UserCreateBody struct {
+	Email string `json:"email"`
+	UserProfile
+}
+
 // TableName represents db table name
 func (UserPublicData) TableName() string {
 	return "users"

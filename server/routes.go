@@ -18,6 +18,10 @@ func defineRoutes(r gin.IRouter) {
 	}
 
 	{
+		v1.POST("/users", controller.PostUser)
+	}
+
+	{
 		v1.GET("/fruits", controller.GetFruits)
 		v1.GET("/fruits/:fruit-id", RequirePathParam("fruit-id"), controller.GetFruitByID)
 		v1withUser.POST("/fruits", controller.PostFruit)
