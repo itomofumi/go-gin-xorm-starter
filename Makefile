@@ -1,7 +1,7 @@
 
 # make sure BIN_NAME value length is <= 13 charactors.
 BIN_NAME=starter-local
-BIN_NAME_PRODUCTION=starter
+BIN_NAME_PRODUCTION=bin/starter
 
 BUILD_TAGS_PRODUCTION='production'
 BUILD_TAGS_DEVELOPMENT='development'
