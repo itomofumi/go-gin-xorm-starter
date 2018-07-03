@@ -127,12 +127,12 @@ func Start() error {
 
 	defineRoutes(r)
 
-	// Start server and wait for "interrupt" or "kill" signal to gracefully shutdown.
 	port := os.Getenv(portEnv)
 	if port == "" {
 		port = "3000"
 	}
 
+	// parse SHUTDOWN_TIMEOUT ENV
 	var shutdownTimeout int
 	shutdownTimeoutStr := os.Getenv(shutdownTimeoutEnv)
 	if shutdownTimeout, err = strconv.Atoi(shutdownTimeoutStr); err != nil {
@@ -147,14 +147,13 @@ func Start() error {
 	}
 
 	go func() {
-		// service connections
+		// Start server
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Fatalf("listen: %s\n", err)
 		}
 	}()
 
-	// Wait for interrupt signal to gracefully shutdown the server with
-	// a timeout of 5 seconds.
+	// Wait for "interrupt" or "kill" signal to gracefully shutdown.
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt, os.Kill)
 	sig := <-quit
