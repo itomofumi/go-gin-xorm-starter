@@ -1,11 +1,15 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
+	"os/signal"
 	"path"
+	"strconv"
 	"time"
 
 	"github.com/gemcook/fs-fish-api/orm"
@@ -20,6 +24,7 @@ import (
 
 const (
 	portEnv              = "PORT"
+	shutdownTimeoutEnv   = "SHUTDOWN_TIMEOUT"
 	cognitoRegionEnv     = "COGNITO_REGION"
 	cognitoUserPoolIDEnv = "COGNITO_USER_POOL_ID"
 )
@@ -122,16 +127,46 @@ func Start() error {
 
 	defineRoutes(r)
 
+	// Start server and wait for "interrupt" or "kill" signal to gracefully shutdown.
 	port := os.Getenv(portEnv)
 	if port == "" {
 		port = "3000"
 	}
 
-	// server listen and serve
-	err = r.Run(fmt.Sprintf(":%v", port))
-	if err != nil {
-		fmt.Println(err)
+	var shutdownTimeout int
+	shutdownTimeoutStr := os.Getenv(shutdownTimeoutEnv)
+	if shutdownTimeout, err = strconv.Atoi(shutdownTimeoutStr); err != nil {
+		logger.Warnf("%v expects int value, but %v was given.", shutdownTimeoutEnv, shutdownTimeoutStr)
+		logger.Infof("use default 5 [sec] for %v", shutdownTimeoutEnv)
+		shutdownTimeout = 5
 	}
+
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%v", port),
+		Handler: r,
+	}
+
+	go func() {
+		// service connections
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt, os.Kill)
+	sig := <-quit
+
+	logger.Printf("Shutdown Server with Signal %v", sig)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(shutdownTimeout)*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Fatal("Server Shutdown:", err)
+	}
+	logger.Println("Server exiting")
 
 	return nil
 }
