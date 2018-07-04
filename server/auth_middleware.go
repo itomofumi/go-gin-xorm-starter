@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gemcook/fs-fish-api/controller"
-	"github.com/gemcook/fs-fish-api/util"
+	"github.com/gemcook/go-gin-xorm-starter/model"
+	"github.com/gemcook/go-gin-xorm-starter/util"
 	"github.com/gemcook/gognito/auth"
 
 	"github.com/dgrijalva/jwt-go"
@@ -30,7 +30,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		authenticator := c.MustGet(authContextKey).(auth.Authenticator)
 		err := authHandler(c, authenticator)
 		if err != nil {
-			er := controller.NewErrorResponse("401", controller.ErrorAuth, err.Error())
+			er := model.NewErrorResponse("401", model.ErrorAuth, err.Error())
 			logger.Debugln(er)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, er)
 		}
@@ -46,7 +46,7 @@ func OptionalAuthMiddleware() gin.HandlerFunc {
 			authenticator := c.MustGet(authContextKey).(auth.Authenticator)
 			err := authHandler(c, authenticator)
 			if err != nil {
-				er := controller.NewErrorResponse("401", controller.ErrorAuth, err.Error())
+				er := model.NewErrorResponse("401", model.ErrorAuth, err.Error())
 				logger.Debugln(er)
 				c.AbortWithStatusJSON(http.StatusUnauthorized, er)
 			}

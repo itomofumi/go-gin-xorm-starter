@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gemcook/fs-fish-api/controller"
 	"github.com/gemcook/go-gin-xorm-starter/model"
 	"github.com/gemcook/go-gin-xorm-starter/service"
 	"github.com/gemcook/go-gin-xorm-starter/util"
@@ -49,7 +48,7 @@ func OptionalUserMiddleware() gin.HandlerFunc {
 
 // UserHandler は認証情報からユーザー取得を行う
 func UserHandler(c *gin.Context) error {
-	registry := c.MustGet(controller.ServiceRegistry).(service.RegistryInterface)
+	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
 	userSrv := registry.NewUsers()
 
 	// ID Tokenのemailはエンドユーザー身元識別子

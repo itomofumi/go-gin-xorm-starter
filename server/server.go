@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gemcook/fs-fish-api/orm"
+	"github.com/gemcook/go-gin-xorm-starter/infra"
 	"github.com/gemcook/go-gin-xorm-starter/service"
 	"github.com/gemcook/go-gin-xorm-starter/util"
 	"github.com/gemcook/gognito/auth"
@@ -31,9 +31,9 @@ const (
 
 // DB Engine の初期化
 func setupDBEngine(logLevel logrus.Level) (*xorm.Engine, error) {
-	dbOptions := orm.NewMySQLConnectionOptionsWithENV()
+	dbOptions := infra.NewMySQLConnectionOptionsWithENV()
 	log.Printf("MySQL Connection String: %v", dbOptions.String())
-	engine, err := orm.InitDbEngine(dbOptions)
+	engine, err := infra.InitMySQLEngine(dbOptions)
 	if err != nil {
 		return nil, err
 	}
