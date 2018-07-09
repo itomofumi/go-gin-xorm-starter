@@ -23,6 +23,7 @@ import (
 )
 
 const (
+	ipEnv                = "IP"
 	portEnv              = "PORT"
 	shutdownTimeoutEnv   = "SHUTDOWN_TIMEOUT"
 	cognitoRegionEnv     = "COGNITO_REGION"
@@ -127,6 +128,8 @@ func Start() error {
 
 	defineRoutes(r)
 
+	ip := os.Getenv(ipEnv)
+
 	port := os.Getenv(portEnv)
 	if port == "" {
 		port = "3000"
@@ -142,7 +145,7 @@ func Start() error {
 	}
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%v", port),
+		Addr:    fmt.Sprintf("%v:%v", ip, port),
 		Handler: r,
 	}
 
