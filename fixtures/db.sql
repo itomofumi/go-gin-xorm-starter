@@ -45,7 +45,7 @@ CREATE TABLE `fruits` (
 
 INSERT INTO `users` (`is_deleted`, `is_enabled`, `created_at`, `updated_at`, `email`, `email_verified`, `display_name`, `about`, `avatar_url`, `last_login_at`)
 VALUES
-  (1,0,'2018-01-01 00:00:00','2018-01-01 00:00:00','test@example.com',1,'テストユーザー','テストユーザーです','https://s3-ap-northeast-1.amazonaws.com/gemcook.com/assets/images/gemo_houseki.png','2018-01-01 00:00:00');
+  (0,1,'2018-01-01 00:00:00','2018-01-01 00:00:00','test@example.com',1,'テストユーザー','テストユーザーです','https://s3-ap-northeast-1.amazonaws.com/gemcook.com/assets/images/gemo_houseki.png','2018-01-01 00:00:00');
 
 INSERT INTO `fruits` (`is_deleted`, `is_enabled`, `created_at`, `updated_at`, `name`, `price`)
 VALUES 
