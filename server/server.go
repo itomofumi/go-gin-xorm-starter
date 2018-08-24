@@ -32,8 +32,8 @@ const (
 
 // DB Engine の初期化
 func setupDBEngine(logLevel logrus.Level) (*xorm.Engine, error) {
-	dbOptions := infra.NewMySQLConnectionOptionsWithENV()
-	log.Printf("MySQL Connection String: %v", dbOptions.String())
+	dbOptions := infra.LoadMySQLConfigEnv()
+	log.Printf("MySQL Connection String: %v", dbOptions.FormatDSN())
 	engine, err := infra.InitMySQLEngine(dbOptions)
 	if err != nil {
 		return nil, err
