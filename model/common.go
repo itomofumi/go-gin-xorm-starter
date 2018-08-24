@@ -4,7 +4,7 @@ import "time"
 
 // Common テーブル共通項目を定義
 type Common struct {
-	ID        uint64     `xorm:"pk autoincr index(pk)" json:"-"`
+	ID        uint64     `xorm:"pk autoincr index(pk)" json:"id"`
 	IsDeleted bool       `xorm:"default false notnull" json:"-"`
 	IsEnabled bool       `xorm:"default true notnull" json:"-"`
 	CreatedAt *time.Time `xorm:"created notnull" json:"-"`
