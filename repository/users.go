@@ -34,7 +34,14 @@ func NewUsers(engine infra.EngineInterface) UsersInterface {
 // GetByEmail returns an user who has the given email.
 func (r *Users) GetByEmail(email string) (user *model.User, ok bool) {
 	var u model.User
-	ok, err := r.engine.Where("is_deleted = ? AND is_enabled = ? AND email = ?", false, true, email).Get(&u)
+	ok, err := r.engine.Where(
+		`
+		is_deleted = ? 
+		AND is_enabled = ? 
+		AND email = ?
+		`,
+		false, true, email).Get(&u)
+
 	if err != nil {
 		return nil, false
 	}
@@ -72,7 +79,13 @@ func (r *Users) Create(email string, profile *model.UserProfile) (*model.UserPub
 		return nil, err
 	}
 	var existsUser model.User
-	found, err := session.Where("is_enabled = ? AND email = ? AND email_verified = ?", true, email, true).Get(&existsUser)
+	found, err := session.Where(
+		`
+		is_enabled = ? 
+		AND email = ? 
+		AND email_verified = ?
+		`, true, email, true).Get(&existsUser)
+
 	if err != nil {
 		session.Rollback()
 		return nil, err
@@ -97,7 +110,16 @@ func (r *Users) Create(email string, profile *model.UserProfile) (*model.UserPub
 
 // Verify updates user as verified
 func (r *Users) Verify(userID uint64) error {
-	sql := "UPDATE users SET identity_verified = ? WHERE id = ? AND is_deleted = ? AND is_enabled = ?"
+	sql := `
+	UPDATE
+		users
+	SET
+		identity_verified = ?
+	WHERE
+		id = ?
+		AND is_deleted = ?
+		AND is_enabled = ?
+	`
 	_, err := r.engine.Exec(sql, true, userID, false, true)
 	if err != nil {
 		return err
@@ -110,7 +132,17 @@ func (r *Users) Verify(userID uint64) error {
 func (r *Users) Update(id uint64, profile *model.UserProfile) (*model.UserPublicData, error) {
 	now := util.GetFormatedTimeNow()
 
-	sql := "UPDATE users SET updated_at = ?, display_name = ?, about = ?, avatar_url = ? WHERE id = ?"
+	sql := `
+	UPDATE
+		users
+	SET
+		updated_at = ?,
+		display_name = ?,
+		about = ?,
+		avatar_url = ?
+	WHERE
+		id = ?
+	`
 
 	_, err := r.engine.Exec(sql, now, profile.DisplayName, profile.About, profile.AvatarURL, id)
 	if err != nil {
@@ -132,7 +164,16 @@ func (r *Users) Update(id uint64, profile *model.UserProfile) (*model.UserPublic
 func (r *Users) Delete(id uint64) error {
 	now := util.GetFormatedTimeNow()
 
-	sql := "UPDATE users SET is_deleted = ?, is_enabled = ?, updated_at = ? WHERE id = ?"
+	sql := `
+	UPDATE
+		users
+	SET
+		is_deleted = ?,
+		is_enabled = ?,
+		updated_at = ?
+	WHERE
+		id = ?
+	`
 
 	_, err := r.engine.Exec(sql, true, false, now, id)
 	if err != nil {
