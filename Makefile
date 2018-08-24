@@ -39,6 +39,10 @@ pre-build:
 build-local:
 	$(MAKE) pre-build BUILD_TAGS=$(BUILD_TAGS_DEVELOPMENT)
 
+.PHONY: build
+build:
+	$(MAKE) pre-build BUILD_TAGS=$(BUILD_TAGS_PRODUCTION) BIN_NAME=$(BIN_NAME_PRODUCTION)
+
 build-linux:
 	$(MAKE) pre-build BUILD_TAGS=$(BUILD_TAGS_PRODUCTION) GOOS=linux GOARCH=amd64 BIN_NAME=$(BIN_NAME_PRODUCTION)
 
