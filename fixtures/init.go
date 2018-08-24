@@ -54,9 +54,9 @@ func main() {
 	}
 
 	util.LoadEnv()
-	mysqlConn := infra.NewMySQLConnectionOptionsWithENV()
-	mysqlConn.Database = ""
-	mysqlConnectionString := mysqlConn.String()
+	mysqlConf := infra.LoadMySQLConfigEnv()
+	mysqlConf.DBName = ""
+	mysqlConnectionString := mysqlConf.FormatDSN()
 	fmt.Println(mysqlConnectionString)
 
 	err := runSource(mysqlConnectionString, os.Args[1])
