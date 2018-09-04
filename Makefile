@@ -6,8 +6,15 @@ BIN_NAME_PRODUCTION=bin/starter
 BUILD_TAGS_PRODUCTION='production'
 BUILD_TAGS_DEVELOPMENT='development'
 
+# define ANSI color
+BOLD=\033[1m
+RED=\033[31m
+GREEN=\033[32m
+CYAN=\033[36m
+RESET=\033[0m
+
 prepare:
-	@if [ ! -e .env ]; then echo "\033[31m.env FILE NOT FOUND\033[0m\n \033[32m'cp .env.example .env'\033[0m to setup .env file." && exit 1; fi
+	@if [ ! -e .env ]; then echo "$(RED).env FILE NOT FOUND$(RESET)\n $(GREEN)'cp .env.example .env'$(RESET) to setup .env file." && exit 1; fi
 
 # スタートグループ
 start: prepare dep
@@ -31,6 +38,10 @@ pre-build:
 
 build-local:
 	$(MAKE) pre-build BUILD_TAGS=$(BUILD_TAGS_DEVELOPMENT)
+
+.PHONY: build
+build:
+	$(MAKE) pre-build BUILD_TAGS=$(BUILD_TAGS_PRODUCTION) BIN_NAME=$(BIN_NAME_PRODUCTION)
 
 build-linux:
 	$(MAKE) pre-build BUILD_TAGS=$(BUILD_TAGS_PRODUCTION) GOOS=linux GOARCH=amd64 BIN_NAME=$(BIN_NAME_PRODUCTION)

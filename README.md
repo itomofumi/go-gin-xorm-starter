@@ -93,3 +93,19 @@ Stop Docker.
 ```sh
 docker-compose down
 ```
+
+## Build Docker image
+
+Build.
+
+```sh
+docker build -t myimage/starter .
+```
+
+Run.
+
+Use `-e` and `--env-file` option to give environment variables.
+
+```sh
+docker run -p 8888:80 -it --env-file .env -e DATABASE_HOST=mydbhost myimage/starter
+```

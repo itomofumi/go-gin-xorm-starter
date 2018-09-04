@@ -73,7 +73,17 @@ func (n *Fruits) GetByID(fruitID int64) (*model.Fruit, error) {
 func (n *Fruits) Update(fruitID int64, fruit *model.FruitBody) (*model.Fruit, error) {
 	now := util.GetFormatedTimeNow()
 
-	sql := "UPDATE fruits SET updated_at = ?, name = ?, price = ? WHERE id = ? AND is_deleted = ?"
+	sql := `
+	UPDATE
+		fruits
+	SET
+		updated_at = ?,
+		name = ?,
+		price = ?
+	WHERE
+		id = ?
+		AND is_deleted = ?
+	`
 
 	_, err := n.engine.Exec(sql, now, fruit.Name, fruit.Price, fruitID, false)
 	if err != nil {
@@ -93,7 +103,17 @@ func (n *Fruits) Update(fruitID int64, fruit *model.FruitBody) (*model.Fruit, er
 func (n *Fruits) Delete(fruitID int64) error {
 	now := util.GetFormatedTimeNow()
 
-	sql := "UPDATE fruits SET updated_at = ?, is_deleted = ? WHERE id = ? AND is_deleted = ?"
+	sql := `
+	UPDATE
+		fruits
+	SET
+		updated_at = ?,
+		is_deleted = ?
+	WHERE
+		id = ?
+		AND is_deleted = ?
+	`
+
 	_, err := n.engine.Exec(sql, now, true, fruitID, false)
 	if err != nil {
 		return err
