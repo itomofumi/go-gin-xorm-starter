@@ -12,10 +12,10 @@ import (
 // FruitsInterface is a fruits repository.
 type FruitsInterface interface {
 	GetAll() ([]*model.Fruit, error)
-	GetByID(fruitID int64) (*model.Fruit, error)
+	GetByID(fruitID uint64) (*model.Fruit, error)
 	Create(fruit *model.FruitBody) (*model.Fruit, error)
-	Update(fruitID int64, fruit *model.FruitBody) (*model.Fruit, error)
-	Delete(fruitID int64) error
+	Update(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error)
+	Delete(fruitID uint64) error
 }
 
 // Fruits implements FruitsInterface.
@@ -56,7 +56,7 @@ func (n *Fruits) Create(fruit *model.FruitBody) (*model.Fruit, error) {
 }
 
 // GetByID gets a fruit by the given ID.
-func (n *Fruits) GetByID(fruitID int64) (*model.Fruit, error) {
+func (n *Fruits) GetByID(fruitID uint64) (*model.Fruit, error) {
 	data := model.Fruit{}
 
 	found, err := n.engine.ID(fruitID).Where("is_deleted = ?", false).Get(&data)
@@ -70,7 +70,7 @@ func (n *Fruits) GetByID(fruitID int64) (*model.Fruit, error) {
 }
 
 // Update edits a fruit data by the given ID.
-func (n *Fruits) Update(fruitID int64, fruit *model.FruitBody) (*model.Fruit, error) {
+func (n *Fruits) Update(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error) {
 	now := util.GetFormatedTimeNow()
 
 	sql := `
@@ -100,7 +100,7 @@ func (n *Fruits) Update(fruitID int64, fruit *model.FruitBody) (*model.Fruit, er
 }
 
 // Delete performs logical deletion by the given ID.
-func (n *Fruits) Delete(fruitID int64) error {
+func (n *Fruits) Delete(fruitID uint64) error {
 	now := util.GetFormatedTimeNow()
 
 	sql := `

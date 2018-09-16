@@ -8,11 +8,22 @@ type Fruit struct {
 
 // FruitBody the main data
 type FruitBody struct {
-	Name  *string `json:"name"`
-	Price *int    `json:"price"`
+	Name  string `json:"name"`
+	Price int    `json:"price"`
 }
 
 // TableName はテーブル名を返す
 func (Fruit) TableName() string {
 	return "fruits"
+}
+
+// IsValid checks fruit data.
+func (f *FruitBody) IsValid() bool {
+	if f.Name == "" {
+		return false
+	}
+	if f.Price < 0 {
+		return false
+	}
+	return true
 }

@@ -13,8 +13,8 @@ import (
 // GetFruits はフルーツ一覧取得
 func GetFruits(c *gin.Context) {
 	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
-	Fruits := registry.NewFruits()
-	list, err := Fruits.GetAll()
+	fruitsService := registry.NewFruits()
+	list, err := fruitsService.GetAll()
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
@@ -25,30 +25,30 @@ func GetFruits(c *gin.Context) {
 
 // GetFruitByID はフルーツを取得します
 func GetFruitByID(c *gin.Context) {
-	noticeID := c.MustGet("fruit-id").(int64)
+	fruitID := c.MustGet("fruit-id").(uint64)
 	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
-	Fruitservice := registry.NewFruits()
-	notice, err := Fruitservice.GetByID(noticeID)
+	fruitsService := registry.NewFruits()
+	fruit, err := fruitsService.GetByID(fruitID)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
 		return
 	}
-	c.JSON(http.StatusOK, notice)
+	c.JSON(http.StatusOK, fruit)
 }
 
 // PostFruit はフルーツを登録します
 func PostFruit(c *gin.Context) {
 	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
-	Fruitservice := registry.NewFruits()
+	fruitsService := registry.NewFruits()
 
-	noticeBody := model.FruitBody{}
-	if err := c.ShouldBindWith(&noticeBody, binding.JSON); err != nil {
+	fruitBody := model.FruitBody{}
+	if err := c.ShouldBindWith(&fruitBody, binding.JSON); err != nil || !fruitBody.IsValid() {
 		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
 		return
 	}
 
-	created, err := Fruitservice.Create(&noticeBody)
+	created, err := fruitsService.Create(&fruitBody)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
 		return
@@ -58,18 +58,15 @@ func PostFruit(c *gin.Context) {
 
 // PutFruit はフルーツを更新します
 func PutFruit(c *gin.Context) {
-	noticeID := c.MustGet("fruit-id").(int64)
+	fruitID := c.MustGet("fruit-id").(uint64)
 	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
 
-	Fruitservice := registry.NewFruits()
+	fruitsService := registry.NewFruits()
 
-	noticeBody := model.FruitBody{}
-	if err := c.ShouldBindWith(&noticeBody, binding.JSON); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
-		return
-	}
+	fruitBody := model.FruitBody{}
+	c.BindWith(&fruitBody, binding.JSON)
 
-	updated, err := Fruitservice.Update(noticeID, &noticeBody)
+	updated, err := fruitsService.Update(fruitID, &fruitBody)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
 		return
@@ -79,14 +76,15 @@ func PutFruit(c *gin.Context) {
 
 // DeleteFruit はフルーツを削除します
 func DeleteFruit(c *gin.Context) {
-	noticeID := c.MustGet("fruit-id").(int64)
+	fruitID := c.MustGet("fruit-id").(uint64)
 	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
 
-	Fruitservice := registry.NewFruits()
-	err := Fruitservice.Delete(noticeID)
+	fruitsService := registry.NewFruits()
+	err := fruitsService.Delete(fruitID)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
 		return
 	}
-	c.Status(http.StatusNoContent)
+
+	c.JSON(http.StatusNoContent, nil)
 }

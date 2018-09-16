@@ -9,10 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RequirePathParam はPathParameterにparamを要求します
+// RequirePathParam parses PathParameter as uint64 by given param and then sets it to gin Context.
 func RequirePathParam(param string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		id, err := strconv.ParseInt(c.Param(param), 10, 64)
+		id, err := strconv.ParseUint(c.Param(param), 10, 64)
 		if err != nil {
 			c.AbortWithStatusJSON(400, model.NewErrorResponse("400", model.ErrorParam, fmt.Sprintf("%v must be a positive number", param), err.Error()))
 			return
@@ -22,7 +22,7 @@ func RequirePathParam(param string) gin.HandlerFunc {
 	}
 }
 
-// RequireStringPathParam はPathParameterにString型のparamを要求します
+// RequireStringPathParam parses PathParameter as string by given param and then sets it to gin Context.
 func RequireStringPathParam(param string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param(param)

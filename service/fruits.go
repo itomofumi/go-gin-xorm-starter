@@ -8,10 +8,10 @@ import (
 // FruitsInterface はフルーツサービスのインタフェース
 type FruitsInterface interface {
 	GetAll() ([]*model.Fruit, error)
-	GetByID(noticeID int64) (*model.Fruit, error)
-	Create(notice *model.FruitBody) (*model.Fruit, error)
-	Update(noticeID int64, notice *model.FruitBody) (*model.Fruit, error)
-	Delete(noticeID int64) error
+	GetByID(fruitID uint64) (*model.Fruit, error)
+	Create(body *model.FruitBody) (*model.Fruit, error)
+	Update(fruitID uint64, notice *model.FruitBody) (*model.Fruit, error)
+	Delete(fruitID uint64) error
 }
 
 // Fruits はフルーツサービス
@@ -31,21 +31,21 @@ func (n *Fruits) GetAll() ([]*model.Fruit, error) {
 }
 
 // GetByID は指定のフルーツを取得します
-func (n *Fruits) GetByID(noticeID int64) (*model.Fruit, error) {
-	return n.repo.GetByID(noticeID)
+func (n *Fruits) GetByID(fruitID uint64) (*model.Fruit, error) {
+	return n.repo.GetByID(fruitID)
 }
 
 // Create はフルーツを新規追加します
-func (n *Fruits) Create(notice *model.FruitBody) (*model.Fruit, error) {
-	return n.repo.Create(notice)
+func (n *Fruits) Create(body *model.FruitBody) (*model.Fruit, error) {
+	return n.repo.Create(body)
 }
 
 // Update はフルーツを更新します
-func (n *Fruits) Update(noticeID int64, notice *model.FruitBody) (*model.Fruit, error) {
-	return n.repo.Update(noticeID, notice)
+func (n *Fruits) Update(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
+	return n.repo.Update(fruitID, body)
 }
 
 // Delete はフルーツを削除します
-func (n *Fruits) Delete(noticeID int64) error {
-	return n.repo.Delete(noticeID)
+func (n *Fruits) Delete(fruitID uint64) error {
+	return n.repo.Delete(fruitID)
 }
