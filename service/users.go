@@ -31,18 +31,16 @@ func NewUsers(repo repository.UsersInterface) UsersInterface {
 // Create はユーザを登録
 func (u *Users) Create(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
 
-	// 現在の登録状態を取得
+	// Get user's verification status.
 	currentUser, found := u.GetByEmail(email)
 
 	if found {
 		if currentUser.EmailVerified {
-			return nil, fmt.Errorf("認証済みのユーザーのため、登録できません")
+			return nil, fmt.Errorf("user is already verified")
 		}
-		// 仮ユーザーなので、削除する
-		err := u.Delete(currentUser.ID)
-		if err != nil {
-			// 失敗しても気にしない
-		}
+		// Delete temporary user.
+		// Don't care wheather success or not.
+		_ = u.Delete(currentUser.ID)
 	}
 
 	return u.repo.Create(email, profile)

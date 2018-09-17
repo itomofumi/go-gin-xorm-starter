@@ -22,7 +22,7 @@ type Registry struct {
 	engine infra.EngineInterface
 }
 
-// NewRegistry initializes registry with injected orm  は依存するORMを注入してサービスレジストリを初期化
+// NewRegistry initializes registry with injected orm.
 func NewRegistry(engine infra.EngineInterface) RegistryInterface {
 	r := &Registry{
 		engine: engine,
