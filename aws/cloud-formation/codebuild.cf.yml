@@ -84,7 +84,8 @@ Resources:
                 - make build
             post_build:
               commands:
-                - goveralls -coverprofile=coverage.out -service=codebuild -repotoken=$COVERALLS_TOKEN
+                - echo $COVERALLS_TOKEN
+                - goveralls -coverprofile=coverage.out -repotoken=$COVERALLS_TOKEN
       Triggers:
         Webhook: true
       Tags:
