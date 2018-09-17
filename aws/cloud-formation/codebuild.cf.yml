@@ -41,6 +41,10 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_LARGE
         Image: gemcook/golang:1.10.0
+        EnvironmentVariables:
+          - Type: PLAINTEXT
+            Name: COVERALLS_TOKEN
+            Value: !Ref CoverallToken
       Artifacts:
         Type: no_artifacts
       BadgeEnabled: true
@@ -56,7 +60,6 @@ Resources:
           env:
             variables:
               SRC_DIR: src/github.com/gemcook/go-gin-xorm-starter
-              COVERALLS_TOKEN: !Ref CoverallToken
           phases:
             install:
               commands:
