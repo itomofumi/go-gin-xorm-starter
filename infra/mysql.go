@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/core"
@@ -62,6 +63,45 @@ func parseLogLevel(lvl string) (core.LogLevel, error) {
 		return core.LOG_DEBUG, nil
 	}
 	return core.LOG_DEBUG, fmt.Errorf("cannot parse \"%v\" into go-xorm/core.LogLevel", lvl)
+}
+
+// RunSQLFile runs sql file.
+func RunSQLFile(mysqlConnectionString, sqlFilepath string) error {
+
+	var err error
+	engine, err := xorm.NewEngine("mysql", mysqlConnectionString)
+	if err != nil {
+		return err
+	}
+	defer engine.Close()
+
+	engine.SetConnMaxLifetime(time.Second)
+	engine.ShowSQL(true)
+	engine.Logger().SetLevel(core.LOG_INFO)
+
+	err = engine.Ping()
+	if err != nil {
+		return err
+	}
+
+	file, err := os.Open(sqlFilepath)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	_, err = engine.Import(file)
+
+	if err != nil {
+		if err.Error() == "not an error" {
+			err = nil
+		} else {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // EscapeMySQLString prevents from SQL-injection.

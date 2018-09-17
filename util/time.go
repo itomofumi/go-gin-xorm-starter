@@ -2,10 +2,13 @@ package util
 
 import "time"
 
+// GetTimeNowFunc is current time function.
+// Default function is "time.Now".
+var GetTimeNowFunc = time.Now
+
 // GetTimeNow は現在時刻を返す
-// TODO: テストに使う時にはビルドタグとかで現在時刻を操作できるようする
 func GetTimeNow() *time.Time {
-	now := time.Now()
+	now := GetTimeNowFunc()
 	return &now
 }
 
