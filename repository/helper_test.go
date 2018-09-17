@@ -18,6 +18,10 @@ var dockerMySQLPort = "11336"
 // Setup initializes test environment.
 // Call cleanup func with 'defer'.
 func Setup(t *testing.T) (engine *xorm.Engine, cleanup func()) {
+	if _, err := exec.LookPath("docker"); err != nil {
+		t.SkipNow()
+		return nil, func() {}
+	}
 
 	currentDir, err := os.Getwd()
 	if err != nil {
@@ -52,6 +56,10 @@ func Setup(t *testing.T) (engine *xorm.Engine, cleanup func()) {
 
 	// clean up function.
 	return engine, func() {
+		if t.Skipped() {
+			return
+		}
+
 		defer os.Chdir(currentDir)
 		engine.Close()
 
