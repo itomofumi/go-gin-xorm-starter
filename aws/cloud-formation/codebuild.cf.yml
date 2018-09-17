@@ -74,6 +74,7 @@ Resources:
                 - echo GOPATH $GOPATH
                 - echo go version \"$(go version)\"
                 - echo go env \"$(go env)\"
+                - make dep
                 - make lint
                 - make test-coverage
             build:
