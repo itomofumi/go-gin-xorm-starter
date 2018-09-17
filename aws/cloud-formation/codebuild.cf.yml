@@ -54,7 +54,8 @@ Resources:
           Type: OAUTH
         Type: GITHUB
         Location: !Ref GitRepogitoryURL
-        GitCloneDepth: 1
+        GitCloneDepth: 25
+        ReportBuildStatus: true
         BuildSpec: |
           version: 0.2
           env:
