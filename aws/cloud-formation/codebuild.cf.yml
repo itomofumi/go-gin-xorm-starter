@@ -40,7 +40,7 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_LARGE
-        Image: golang:1.11.0-alpine3.7
+        Image: gemcook/golang:1.10.0
       Artifacts:
         Type: no_artifacts
       BadgeEnabled: true
