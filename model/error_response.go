@@ -1,6 +1,9 @@
 package model
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // ErrorResponse の定義
 type ErrorResponse struct {
@@ -9,9 +12,9 @@ type ErrorResponse struct {
 
 // ErrorResponseInner の定義
 type ErrorResponseInner struct {
-	Code     string      `json:"code"`
-	Type     ErrorType   `json:"type"`
-	Messages interface{} `json:"messages"`
+	Code     string    `json:"code"`
+	Type     ErrorType `json:"type"`
+	Messages []string  `json:"messages"`
 }
 
 // Append adds an error to ErrorResponse
@@ -20,7 +23,7 @@ func (res *ErrorResponse) Append(code string, t ErrorType, messages ...interface
 
 	}
 	errRes := &ErrorResponseInner{
-		Messages: messages,
+		Messages: msgToStrings(messages),
 		Code:     code,
 		Type:     t,
 	}
@@ -31,6 +34,21 @@ func (res *ErrorResponse) Append(code string, t ErrorType, messages ...interface
 func (res ErrorResponse) String() string {
 	str, _ := json.MarshalIndent(&res, "", "  ")
 	return string(str)
+}
+
+func msgToStrings(messages []interface{}) []string {
+	results := make([]string, 0, len(messages))
+	for _, m := range messages {
+		switch v := m.(type) {
+		case string:
+			results = append(results, v)
+		case error:
+			results = append(results, v.Error())
+		case fmt.Stringer:
+			results = append(results, v.String())
+		}
+	}
+	return results
 }
 
 // ErrorType エラータイプ
@@ -50,11 +68,11 @@ const (
 )
 
 // NewErrorResponse APIエラー時の詳細レスポンスを生成
-func NewErrorResponse(code string, t ErrorType, messages ...interface{}) ErrorResponse {
-	res := ErrorResponse{
+func NewErrorResponse(code string, t ErrorType, messages ...interface{}) *ErrorResponse {
+	res := &ErrorResponse{
 		Errors: []*ErrorResponseInner{
 			&ErrorResponseInner{
-				Messages: messages,
+				Messages: msgToStrings(messages),
 				Code:     code,
 				Type:     t,
 			}}}

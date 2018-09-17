@@ -21,13 +21,13 @@ func (User) TableName() string {
 // GetPublicData は公開用のユーザー情報を取得
 func (u *User) GetPublicData() *UserPublicData {
 	pub := u.UserPublicData
-	pub.PublicID = u.ID
+	pub.UserID = u.ID
 	return &pub
 }
 
 // UserPublicData has public user data
 type UserPublicData struct {
-	PublicID    uint64 `xorm:"-" json:"id"`
+	UserID      uint64 `xorm:"-" json:"user_id"`
 	UserProfile `xorm:"extends"`
 }
 
@@ -38,13 +38,13 @@ type UserProfile struct {
 	AvatarURL   *string `json:"avatar_url"`
 }
 
-// UserCreateBody contains new user data.
-type UserCreateBody struct {
-	Email string `json:"email"`
-	UserProfile
-}
-
 // TableName represents db table name
 func (UserPublicData) TableName() string {
 	return "users"
+}
+
+// UserCreateBody contains new user data.
+type UserCreateBody struct {
+	Email string `binding:"email" json:"email" `
+	UserProfile
 }

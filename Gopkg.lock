@@ -27,6 +27,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:d3ce14736a43524c0fd93e59ab22acf5540f2e97f22e0d19beb0bc7d02f9e071"
+  name = "github.com/gemcook/ptr"
+  packages = ["."]
+  pruneopts = ""
+  revision = "91632201dfc876021121963a76f103bbe1756b09"
+
+[[projects]]
+  branch = "master"
   digest = "1:1120f960f5c334f0f94bad29eefaf73d52d226893369693686148f66c1993f15"
   name = "github.com/gin-contrib/sse"
   packages = ["."]
@@ -215,6 +223,7 @@
   input-imports = [
     "github.com/dgrijalva/jwt-go",
     "github.com/gemcook/gognito/auth",
+    "github.com/gemcook/ptr",
     "github.com/gin-gonic/gin",
     "github.com/gin-gonic/gin/binding",
     "github.com/go-sql-driver/mysql",

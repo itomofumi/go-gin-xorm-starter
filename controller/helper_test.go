@@ -24,11 +24,17 @@ func Setup() func() {
 type RegistryMock struct {
 	service.RegistryInterface
 	FruitsMock service.FruitsInterface
+	UsersMock  service.UsersInterface
 }
 
 // NewFruits returns FruitsMock
 func (r *RegistryMock) NewFruits() service.FruitsInterface {
 	return r.FruitsMock
+}
+
+// NewUsers returns UsersMock
+func (r *RegistryMock) NewUsers() service.UsersInterface {
+	return r.UsersMock
 }
 
 func createGinTestContext(registry *RegistryMock) (*gin.Context, *httptest.ResponseRecorder) {

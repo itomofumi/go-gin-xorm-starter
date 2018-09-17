@@ -43,7 +43,7 @@ func (fm *FruitsMock) Delete(fruitID uint64) error {
 	return fm.FakeDelete(fruitID)
 }
 
-var testData = []*model.Fruit{
+var testFruits = []*model.Fruit{
 	{
 		Common: model.Common{ID: 1},
 		FruitBody: &model.FruitBody{
@@ -74,10 +74,10 @@ func TestGetFruits(t *testing.T) {
 	}{
 		{"success", args{
 			getAll: func() ([]*model.Fruit, error) {
-				return testData, nil
+				return testFruits, nil
 			}},
 			http.StatusOK,
-			testData,
+			testFruits,
 		},
 		{"bad request", args{
 			getAll: func() ([]*model.Fruit, error) {
@@ -129,7 +129,7 @@ func TestGetFruitByID(t *testing.T) {
 		{"success", args{
 			id: 1,
 			getByID: func(id uint64) (*model.Fruit, error) {
-				for _, v := range testData {
+				for _, v := range testFruits {
 					if v.ID == id {
 						return v, nil
 					}
@@ -137,7 +137,7 @@ func TestGetFruitByID(t *testing.T) {
 				return nil, fmt.Errorf("data not found for id = %v", id)
 			}},
 			http.StatusOK,
-			testData[0],
+			testFruits[0],
 		},
 		{"bad request", args{
 			id: 9999,
@@ -189,15 +189,15 @@ func TestPostFruit(t *testing.T) {
 		want       interface{}
 	}{
 		{"success", args{
-			body: testData[0].FruitBody,
+			body: testFruits[0].FruitBody,
 			create: func(fruit *model.FruitBody) (*model.Fruit, error) {
-				return testData[0], nil
+				return testFruits[0], nil
 			}},
 			http.StatusCreated,
-			testData[0],
+			testFruits[0],
 		},
 		{"bad request", args{
-			body: testData[0].FruitBody,
+			body: testFruits[0].FruitBody,
 			create: func(fruit *model.FruitBody) (*model.Fruit, error) {
 				return nil, fmt.Errorf("some error")
 			}},
@@ -212,7 +212,7 @@ func TestPostFruit(t *testing.T) {
 				return nil, fmt.Errorf("some error")
 			}},
 			http.StatusBadRequest,
-			model.NewErrorResponse("400", model.ErrorParam, "some error"),
+			model.NewErrorResponse("400", model.ErrorParam, "json: cannot unmarshal string into Go struct field FruitBody.price of type int"),
 		},
 	}
 
@@ -261,18 +261,18 @@ func TestPutFruit(t *testing.T) {
 	}{
 		{"success", args{
 			id:   1,
-			body: testData[0].FruitBody,
+			body: testFruits[0].FruitBody,
 			update: func(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error) {
-				d := testData[0]
+				d := testFruits[0]
 				d.FruitBody = fruit
 				return d, nil
 			}},
 			http.StatusOK,
-			testData[0],
+			testFruits[0],
 		},
 		{"bad request", args{
 			id:   1,
-			body: testData[0].FruitBody,
+			body: testFruits[0].FruitBody,
 			update: func(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error) {
 				return nil, fmt.Errorf("some error")
 			}},

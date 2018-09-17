@@ -17,7 +17,7 @@ func GetFruits(c *gin.Context) {
 	list, err := fruitsService.GetAll()
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
+		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err))
 		return
 	}
 	c.JSON(http.StatusOK, list)
@@ -31,7 +31,7 @@ func GetFruitByID(c *gin.Context) {
 	fruit, err := fruitsService.GetByID(fruitID)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
+		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err))
 		return
 	}
 	c.JSON(http.StatusOK, fruit)
@@ -44,13 +44,13 @@ func PostFruit(c *gin.Context) {
 
 	fruitBody := model.FruitBody{}
 	if err := c.ShouldBindWith(&fruitBody, binding.JSON); err != nil || !fruitBody.IsValid() {
-		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
+		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err))
 		return
 	}
 
 	created, err := fruitsService.Create(&fruitBody)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
+		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err))
 		return
 	}
 	c.JSON(http.StatusCreated, created)
@@ -68,7 +68,7 @@ func PutFruit(c *gin.Context) {
 
 	updated, err := fruitsService.Update(fruitID, &fruitBody)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
+		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err))
 		return
 	}
 	c.JSON(http.StatusOK, updated)
@@ -82,7 +82,7 @@ func DeleteFruit(c *gin.Context) {
 	fruitsService := registry.NewFruits()
 	err := fruitsService.Delete(fruitID)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err.Error()))
+		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err))
 		return
 	}
 
