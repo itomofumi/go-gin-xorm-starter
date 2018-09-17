@@ -8,6 +8,7 @@ log/
 starter
 starter-local
 bin/
+coverage.out
 
 ### log ###
 *.log

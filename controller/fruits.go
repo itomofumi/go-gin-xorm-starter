@@ -64,7 +64,7 @@ func PutFruit(c *gin.Context) {
 	fruitsService := registry.NewFruits()
 
 	fruitBody := model.FruitBody{}
-	c.BindWith(&fruitBody, binding.JSON)
+	_ = c.ShouldBindWith(&fruitBody, binding.JSON)
 
 	updated, err := fruitsService.Update(fruitID, &fruitBody)
 	if err != nil {

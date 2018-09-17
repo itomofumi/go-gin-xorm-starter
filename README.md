@@ -1,5 +1,7 @@
 # go-gin-xorm-starter
 
+![CodeBuildBadge](https://codebuild.ap-northeast-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiYTFZRitkRDdWdzdscEZhaHN6R2VnVDBBaXpVNHprVFdPZGhDQVZOQVdxZ1J6SnBCeFl1ZmZncm9aZ2JYaTJkZG01VU00MUFzalhzSjU0ZGhDRlluNy84PSIsIml2UGFyYW1ldGVyU3BlYyI6ImJqS2h5cGpibDY4MzdpYi8iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
+
 Golang API starter using Gin and xorm.
 
 ## Requirements

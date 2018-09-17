@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CodeBuild for "go-gin-xorm-starter" Continuous Integration'
+Parameters:
+  CodeBuildProjectName:
+    Type: String
+    Description: 'The project name. (ex. go-gin-xorm-starter)'
+    Default: go-gin-xorm-starter
+  GitRepogitoryURL:
+    Type: String
+    Description: 'The GitHub repogitory name to be integrated. (ex. https://github.com/gemcook/go-gin-xorm-starter.git)'
+    Default: 'https://github.com/gemcook/go-gin-xorm-starter.git'
+  CoverallToken:
+    Type: String
+    Description: 'COVERALLS (https://coveralls.io) repo token. (ex. ben8lhUJb9Kmt1rbJPUa3q1mkXaaXXnXX)'
+
+Resources:
+
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - codebuild.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AdministratorAccess
+      Policies: !Ref AWS::NoValue
+      RoleName: !Ref AWS::NoValue
+
+  CodeBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Ref CodeBuildProjectName
+      Description: !Sub "${CodeBuildProjectName} Continuous Integration"
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_LARGE
+        Image: golang:1.11.0-alpine3.7
+      Artifacts:
+        Type: no_artifacts
+      BadgeEnabled: true
+      ServiceRole: !Ref CodeBuildServiceRole
+      Source:
+        Auth:
+          Type: OAUTH
+        Type: GITHUB
+        Location: !Ref GitRepogitoryURL
+        GitCloneDepth: 1
+        BuildSpec: |
+          version: 0.2
+          env:
+            variables:
+              SRC_DIR: src/github.com/gemcook/go-gin-xorm-starter
+              COVERALLS_TOKEN: !Ref CoverallToken
+          phases:
+            install:
+              commands:
+                - export PATH=${GOPATH}/bin:${PATH}
+                - go get github.com/mattn/goveralls
+            pre_build:
+              commands:
+                # goのソースコードをSRC_DIRで指定したディレクトリ下にコピー
+                - export DEFAULT_GOPATH=$(echo $GOPATH | sed s/:/$'\t'/ | awk '{print $1}')
+                - echo DEFAULT_GOPATH/SRC_DIR ${DEFAULT_GOPATH}/${SRC_DIR}
+                - mkdir -p ${DEFAULT_GOPATH}/${SRC_DIR}
+                - cd ${DEFAULT_GOPATH}/${SRC_DIR}
+                - mv ${CODEBUILD_SRC_DIR}/* .
+                # 環境情報の表示
+                - echo GOPATH $GOPATH
+                - echo go version \"$(go version)\"
+                - echo go env \"$(go env)\"
+                - make lint
+                - make test-coverage
+            build:
+              commands:
+                - make build
+            post_build:
+              commands:
+                - goveralls -coverprofile=coverage.out -service=codebuild -repotoken=$COVERALLS_TOKEN
+      Triggers:
+        Webhook: true
+      Tags:
+        - Key: Name
+          Value: !Ref CodeBuildProjectName
+      TimeoutInMinutes: 60
+
+Outputs:
+  CodeBuildURL:
+    Value: !Sub https://console.aws.amazon.com/codebuild/home?region=${AWS::Region}#/projects/${CodeBuildProjectName}/view
