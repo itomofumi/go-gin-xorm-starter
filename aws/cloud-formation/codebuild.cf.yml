@@ -60,6 +60,8 @@ Resources:
           phases:
             install:
               commands:
+                # need to run 'go test'
+                - apk add gcc musl-dev
                 - export PATH=${GOPATH}/bin:${PATH}
                 - go get github.com/mattn/goveralls
             pre_build:
