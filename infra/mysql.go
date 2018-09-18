@@ -76,8 +76,8 @@ func RunSQLFile(mysqlConnectionString, sqlFilepath string) error {
 	defer engine.Close()
 
 	engine.SetConnMaxLifetime(time.Second)
-	engine.ShowSQL(true)
-	engine.Logger().SetLevel(core.LOG_INFO)
+	engine.ShowSQL(false)
+	engine.Logger().SetLevel(core.LOG_WARNING)
 
 	err = engine.Ping()
 	if err != nil {

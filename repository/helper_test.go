@@ -1,7 +1,6 @@
 package repository_test
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
@@ -51,7 +50,7 @@ func Setup(t *testing.T) (engine *xorm.Engine, cleanup func()) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
+	engine.ShowSQL(false)
 	engine.SetConnMaxLifetime(time.Second)
 
 	// clean up function.
@@ -81,7 +80,6 @@ func initDatabase(t *testing.T) {
 	mysqlConf := infra.LoadMySQLConfigEnv()
 	mysqlConf.DBName = ""
 	connStr := mysqlConf.FormatDSN()
-	fmt.Println(connStr)
 	err := infra.RunSQLFile(connStr, "./fixtures/db.sql")
 	if err != nil {
 		t.Fatal(err)

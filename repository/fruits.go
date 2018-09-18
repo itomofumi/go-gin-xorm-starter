@@ -6,15 +6,15 @@ import (
 	"github.com/go-xorm/xorm"
 
 	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/go-gin-xorm-starter/util"
+	"github.com/gemcook/ptr"
 )
 
 // FruitsInterface is a fruits repository.
 type FruitsInterface interface {
 	GetAll() ([]*model.Fruit, error)
 	GetByID(fruitID uint64) (*model.Fruit, error)
-	Create(fruit *model.FruitBody) (*model.Fruit, error)
-	Update(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error)
+	Create(body *model.FruitBody) (*model.Fruit, error)
+	Update(fruitID uint64, body *model.FruitBody) (*model.Fruit, error)
 	Delete(fruitID uint64) error
 }
 
@@ -24,15 +24,15 @@ type Fruits struct {
 }
 
 // NewFruits initializes a fruits repository.
-func NewFruits(engine xorm.EngineInterface) FruitsInterface {
-	s := Fruits{engine}
-	return &s
+func NewFruits(engine xorm.EngineInterface) *Fruits {
+	f := Fruits{engine}
+	return &f
 }
 
 // GetAll gets all fruits.
-func (n *Fruits) GetAll() ([]*model.Fruit, error) {
+func (f *Fruits) GetAll() ([]*model.Fruit, error) {
 	list := make([]*model.Fruit, 0)
-	err := n.engine.Where("is_deleted = ?", false).Find(&list)
+	err := f.engine.Where("is_deleted = ?", false).Find(&list)
 	if err != nil {
 		return nil, err
 	}
@@ -41,57 +41,53 @@ func (n *Fruits) GetAll() ([]*model.Fruit, error) {
 }
 
 // Create adds a new fruit and returns the created item.
-func (n *Fruits) Create(fruit *model.FruitBody) (*model.Fruit, error) {
-	data := model.Fruit{}
-	data.FruitBody = fruit
-	data.IsDeleted = false
-	data.IsEnabled = true
+func (f *Fruits) Create(body *model.FruitBody) (*model.Fruit, error) {
+	fruit := model.Fruit{}
+	if body != nil {
+		fruit.FruitBody = *body
+	}
+	fruit.IsDeleted = ptr.Bool(false)
+	fruit.IsEnabled = ptr.Bool(true)
 
-	_, err := n.engine.InsertOne(&data)
+	_, err := f.engine.InsertOne(&fruit)
 	if err != nil {
 		return nil, err
 	}
 
-	return &data, nil
+	return &fruit, nil
 }
 
 // GetByID gets a fruit by the given ID.
-func (n *Fruits) GetByID(fruitID uint64) (*model.Fruit, error) {
-	data := model.Fruit{}
+func (f *Fruits) GetByID(fruitID uint64) (*model.Fruit, error) {
+	fruit := model.Fruit{}
 
-	found, err := n.engine.ID(fruitID).Where("is_deleted = ?", false).Get(&data)
+	found, err := f.engine.ID(fruitID).Where("is_deleted = ?", false).Get(&fruit)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
 		return nil, fmt.Errorf("data not found for id = %v", fruitID)
 	}
-	return &data, nil
+	return &fruit, nil
 }
 
 // Update edits a fruit data by the given ID.
-func (n *Fruits) Update(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error) {
-	now := util.GetFormatedTimeNow()
+func (f *Fruits) Update(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
+	if body == nil {
+		return nil, fmt.Errorf("body must not be nil")
+	}
+	fruit := model.Fruit{
+		FruitBody: *body,
+	}
 
-	sql := `
-	UPDATE
-		fruits
-	SET
-		updated_at = ?,
-		name = ?,
-		price = ?
-	WHERE
-		id = ?
-		AND is_deleted = ?
-	`
+	_, err := f.engine.ID(fruitID).Where("is_deleted = ?", false).Update(&fruit)
 
-	_, err := n.engine.Exec(sql, now, fruit.Name, fruit.Price, fruitID, false)
 	if err != nil {
 		return nil, err
 	}
 
 	// gets the updated item.
-	updated, err := n.GetByID(fruitID)
+	updated, err := f.GetByID(fruitID)
 	if err != nil {
 		return nil, err
 	}
@@ -100,21 +96,11 @@ func (n *Fruits) Update(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, e
 }
 
 // Delete performs logical deletion by the given ID.
-func (n *Fruits) Delete(fruitID uint64) error {
-	now := util.GetFormatedTimeNow()
+func (f *Fruits) Delete(fruitID uint64) error {
+	fruit := model.Fruit{}
+	fruit.IsDeleted = ptr.Bool(true)
 
-	sql := `
-	UPDATE
-		fruits
-	SET
-		updated_at = ?,
-		is_deleted = ?
-	WHERE
-		id = ?
-		AND is_deleted = ?
-	`
-
-	_, err := n.engine.Exec(sql, now, true, fruitID, false)
+	_, err := f.engine.ID(fruitID).Where("is_deleted = ?", false).Update(&fruit)
 	if err != nil {
 		return err
 	}

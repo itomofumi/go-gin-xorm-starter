@@ -7,6 +7,7 @@ import (
 	"github.com/gemcook/go-gin-xorm-starter/model"
 	"github.com/gemcook/go-gin-xorm-starter/service"
 	"github.com/gemcook/go-gin-xorm-starter/util"
+	"github.com/gemcook/ptr"
 
 	"github.com/gin-gonic/gin"
 )
@@ -59,12 +60,12 @@ func UserHandler(c *gin.Context) error {
 	}
 
 	// ここまで来たらユーザー認証OK
-	if !user.EmailVerified {
+	if user.EmailVerified != nil && !*user.EmailVerified {
 		err := userSrv.Verify(user.ID)
 		if err != nil {
 			return err
 		}
-		user.EmailVerified = true
+		user.EmailVerified = ptr.Bool(true)
 	}
 
 	// PublicDataの更新

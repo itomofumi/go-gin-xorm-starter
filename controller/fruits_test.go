@@ -10,6 +10,7 @@ import (
 	"github.com/gemcook/go-gin-xorm-starter/controller"
 	"github.com/gemcook/go-gin-xorm-starter/model"
 	"github.com/gemcook/go-gin-xorm-starter/service"
+	"github.com/gemcook/ptr"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,8 +19,8 @@ type FruitsMock struct {
 	service.FruitsInterface
 	FakeGetAll  func() ([]*model.Fruit, error)
 	FakeGetByID func(fruitID uint64) (*model.Fruit, error)
-	FakeCreate  func(fruit *model.FruitBody) (*model.Fruit, error)
-	FakeUpdate  func(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error)
+	FakeCreate  func(body *model.FruitBody) (*model.Fruit, error)
+	FakeUpdate  func(fruitID uint64, body *model.FruitBody) (*model.Fruit, error)
 	FakeDelete  func(fruitID uint64) error
 }
 
@@ -31,12 +32,12 @@ func (fm *FruitsMock) GetByID(fruitID uint64) (*model.Fruit, error) {
 	return fm.FakeGetByID(fruitID)
 }
 
-func (fm *FruitsMock) Create(fruit *model.FruitBody) (*model.Fruit, error) {
-	return fm.FakeCreate(fruit)
+func (fm *FruitsMock) Create(body *model.FruitBody) (*model.Fruit, error) {
+	return fm.FakeCreate(body)
 }
 
-func (fm *FruitsMock) Update(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error) {
-	return fm.FakeUpdate(fruitID, fruit)
+func (fm *FruitsMock) Update(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
+	return fm.FakeUpdate(fruitID, body)
 }
 
 func (fm *FruitsMock) Delete(fruitID uint64) error {
@@ -46,16 +47,16 @@ func (fm *FruitsMock) Delete(fruitID uint64) error {
 var testFruits = []*model.Fruit{
 	{
 		Common: model.Common{ID: 1},
-		FruitBody: &model.FruitBody{
-			Price: 100,
-			Name:  "Apple",
+		FruitBody: model.FruitBody{
+			Price: ptr.Int(100),
+			Name:  ptr.String("Apple"),
 		},
 	},
 	{
 		Common: model.Common{ID: 2},
-		FruitBody: &model.FruitBody{
-			Price: 200,
-			Name:  "Mango",
+		FruitBody: model.FruitBody{
+			Price: ptr.Int(200),
+			Name:  ptr.String("Mango"),
 		},
 	},
 }
@@ -180,7 +181,7 @@ func TestPostFruit(t *testing.T) {
 
 	type args struct {
 		body   interface{}
-		create func(fruit *model.FruitBody) (*model.Fruit, error)
+		create func(body *model.FruitBody) (*model.Fruit, error)
 	}
 	tests := []struct {
 		name       string
@@ -190,7 +191,7 @@ func TestPostFruit(t *testing.T) {
 	}{
 		{"success", args{
 			body: testFruits[0].FruitBody,
-			create: func(fruit *model.FruitBody) (*model.Fruit, error) {
+			create: func(body *model.FruitBody) (*model.Fruit, error) {
 				return testFruits[0], nil
 			}},
 			http.StatusCreated,
@@ -198,7 +199,7 @@ func TestPostFruit(t *testing.T) {
 		},
 		{"bad request", args{
 			body: testFruits[0].FruitBody,
-			create: func(fruit *model.FruitBody) (*model.Fruit, error) {
+			create: func(body *model.FruitBody) (*model.Fruit, error) {
 				return nil, fmt.Errorf("some error")
 			}},
 			http.StatusBadRequest,
@@ -208,7 +209,7 @@ func TestPostFruit(t *testing.T) {
 			body: struct {
 				Price string `json:"price"`
 			}{Price: "aaa"},
-			create: func(fruit *model.FruitBody) (*model.Fruit, error) {
+			create: func(body *model.FruitBody) (*model.Fruit, error) {
 				return nil, fmt.Errorf("some error")
 			}},
 			http.StatusBadRequest,
@@ -251,7 +252,7 @@ func TestPutFruit(t *testing.T) {
 	type args struct {
 		id     uint64
 		body   *model.FruitBody
-		update func(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error)
+		update func(fruitID uint64, body *model.FruitBody) (*model.Fruit, error)
 	}
 	tests := []struct {
 		name       string
@@ -261,10 +262,10 @@ func TestPutFruit(t *testing.T) {
 	}{
 		{"success", args{
 			id:   1,
-			body: testFruits[0].FruitBody,
-			update: func(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error) {
+			body: &testFruits[0].FruitBody,
+			update: func(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
 				d := testFruits[0]
-				d.FruitBody = fruit
+				d.FruitBody = *body
 				return d, nil
 			}},
 			http.StatusOK,
@@ -272,8 +273,8 @@ func TestPutFruit(t *testing.T) {
 		},
 		{"bad request", args{
 			id:   1,
-			body: testFruits[0].FruitBody,
-			update: func(fruitID uint64, fruit *model.FruitBody) (*model.Fruit, error) {
+			body: &testFruits[0].FruitBody,
+			update: func(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
 				return nil, fmt.Errorf("some error")
 			}},
 			http.StatusBadRequest,

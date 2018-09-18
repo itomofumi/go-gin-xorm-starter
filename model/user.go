@@ -8,7 +8,7 @@ import (
 type User struct {
 	Common         `xorm:"extends"`
 	Email          string     `xorm:"VARCHAR(120) notnull index(email)" json:"email"`
-	EmailVerified  bool       `xorm:"notnull" json:"email_verified"`
+	EmailVerified  *bool      `xorm:"notnull" json:"email_verified"`
 	LastLoginAt    *time.Time `json:"last_login_at"`
 	UserPublicData `xorm:"extends"`
 }

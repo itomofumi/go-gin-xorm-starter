@@ -6,6 +6,7 @@ import (
 	"github.com/gemcook/go-gin-xorm-starter/infra"
 	"github.com/gemcook/go-gin-xorm-starter/model"
 	"github.com/gemcook/go-gin-xorm-starter/util"
+	"github.com/gemcook/ptr"
 )
 
 // UsersInterface has users data.
@@ -24,23 +25,23 @@ type Users struct {
 }
 
 // NewUsers initializes Users
-func NewUsers(engine infra.EngineInterface) UsersInterface {
-	r := Users{
+func NewUsers(engine infra.EngineInterface) *Users {
+	u := Users{
 		engine: engine,
 	}
-	return &r
+	return &u
 }
 
 // GetByEmail returns an user who has the given email.
-func (r *Users) GetByEmail(email string) (user *model.User, ok bool) {
-	var u model.User
-	ok, err := r.engine.Where(
+func (u *Users) GetByEmail(email string) (user *model.User, ok bool) {
+	var result model.User
+	ok, err := u.engine.Where(
 		`
 		is_deleted = ? 
 		AND is_enabled = ? 
 		AND email = ?
 		`,
-		false, true, email).Get(&u)
+		false, true, email).Get(&result)
 
 	if err != nil {
 		return nil, false
@@ -48,13 +49,13 @@ func (r *Users) GetByEmail(email string) (user *model.User, ok bool) {
 	if !ok {
 		return nil, false
 	}
-	return &u, true
+	return &result, true
 }
 
 // GetByID はIDでユーザー情報を取得します
-func (r *Users) GetByID(id uint64) (user *model.User, ok bool) {
+func (u *Users) GetByID(id uint64) (user *model.User, ok bool) {
 	user = &model.User{}
-	ok, err := r.engine.ID(id).Get(user)
+	ok, err := u.engine.ID(id).Get(user)
 	if err != nil || !ok {
 		return nil, false
 	}
@@ -62,16 +63,17 @@ func (r *Users) GetByID(id uint64) (user *model.User, ok bool) {
 }
 
 // Create adds a new user.
-func (r *Users) Create(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
+func (u *Users) Create(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
 	user := model.User{}
 	user.Common.UnsetDefaltCols()
 	user.Email = email
+	user.EmailVerified = ptr.Bool(false)
 	user.DisplayName = profile.DisplayName
 	user.About = profile.About
 	user.AvatarURL = profile.AvatarURL
 	user.LastLoginAt = util.GetTimeNow()
 
-	session := r.engine.NewSession()
+	session := u.engine.NewSession()
 	defer session.Close()
 
 	err := session.Begin()
@@ -109,18 +111,14 @@ func (r *Users) Create(email string, profile *model.UserProfile) (*model.UserPub
 }
 
 // Verify updates user as verified
-func (r *Users) Verify(userID uint64) error {
-	sql := `
-	UPDATE
-		users
-	SET
-		identity_verified = ?
-	WHERE
-		id = ?
-		AND is_deleted = ?
+func (u *Users) Verify(userID uint64) error {
+	user := model.User{}
+	user.EmailVerified = ptr.Bool(true)
+	_, err := u.engine.ID(userID).Where(
+		`
+		is_deleted = ? 
 		AND is_enabled = ?
-	`
-	_, err := r.engine.Exec(sql, true, userID, false, true)
+		`, false, true).Update(&user)
 	if err != nil {
 		return err
 	}
@@ -129,53 +127,33 @@ func (r *Users) Verify(userID uint64) error {
 }
 
 // Update updates user's profile data.
-func (r *Users) Update(id uint64, profile *model.UserProfile) (*model.UserPublicData, error) {
-	now := util.GetFormatedTimeNow()
+func (u *Users) Update(id uint64, profile *model.UserProfile) (*model.UserPublicData, error) {
+	if profile == nil {
+		return nil, fmt.Errorf("profile must not be nil")
+	}
+	user := model.User{}
+	user.UserProfile = *profile
 
-	sql := `
-	UPDATE
-		users
-	SET
-		updated_at = ?,
-		display_name = ?,
-		about = ?,
-		avatar_url = ?
-	WHERE
-		id = ?
-	`
-
-	_, err := r.engine.Exec(sql, now, profile.DisplayName, profile.About, profile.AvatarURL, id)
+	_, err := u.engine.ID(id).Update(&user)
 	if err != nil {
 		return nil, err
 	}
 
-	var user model.User
-	ok, err := r.engine.ID(id).Get(&user)
+	var updated model.User
+	_, err = u.engine.ID(id).Get(&updated)
 	if err != nil {
 		return nil, err
 	}
-	if !ok {
-		return nil, fmt.Errorf("target user not found")
-	}
-	return user.GetPublicData(), nil
+
+	return updated.GetPublicData(), nil
 }
 
 // Delete sets is_deleted = true
-func (r *Users) Delete(id uint64) error {
-	now := util.GetFormatedTimeNow()
+func (u *Users) Delete(id uint64) error {
+	user := model.User{}
+	user.IsDeleted = ptr.Bool(true)
 
-	sql := `
-	UPDATE
-		users
-	SET
-		is_deleted = ?,
-		is_enabled = ?,
-		updated_at = ?
-	WHERE
-		id = ?
-	`
-
-	_, err := r.engine.Exec(sql, true, false, now, id)
+	_, err := u.engine.ID(id).Where("is_deleted = ?", false).Update(&user)
 	if err != nil {
 		return err
 	}

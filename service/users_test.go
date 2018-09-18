@@ -95,7 +95,7 @@ func TestUsers_Create(t *testing.T) {
 			"success for secondary creation",
 			fakes{
 				getByEmail: func(email string) (user *model.User, ok bool) {
-					return &model.User{EmailVerified: false}, true
+					return &model.User{EmailVerified: ptr.Bool(false)}, true
 				},
 				create: func(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
 					return testUsers[0].GetPublicData(), nil
@@ -113,7 +113,7 @@ func TestUsers_Create(t *testing.T) {
 			"failure for verified email",
 			fakes{
 				getByEmail: func(email string) (user *model.User, ok bool) {
-					return &model.User{EmailVerified: true}, true
+					return &model.User{EmailVerified: ptr.Bool(true)}, true
 				},
 				create: func(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
 					return nil, nil

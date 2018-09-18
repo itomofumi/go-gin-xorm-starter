@@ -35,7 +35,7 @@ func (u *Users) Create(email string, profile *model.UserProfile) (*model.UserPub
 	currentUser, found := u.GetByEmail(email)
 
 	if found {
-		if currentUser.EmailVerified {
+		if currentUser.EmailVerified != nil && *currentUser.EmailVerified {
 			return nil, fmt.Errorf("user is already verified")
 		}
 		// Delete temporary user.

@@ -1,12 +1,16 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/gemcook/ptr"
+)
 
 // Common テーブル共通項目を定義
 type Common struct {
 	ID        uint64     `xorm:"pk autoincr index(pk)" json:"id"`
-	IsDeleted bool       `xorm:"default false notnull" json:"-"`
-	IsEnabled bool       `xorm:"default true notnull" json:"-"`
+	IsDeleted *bool      `xorm:"default false notnull" json:"-"`
+	IsEnabled *bool      `xorm:"default true notnull" json:"-"`
 	CreatedAt *time.Time `xorm:"created notnull" json:"-"`
 	UpdatedAt *time.Time `xorm:"updated notnull" json:"-"`
 }
@@ -18,8 +22,8 @@ func (Common) TableName() string {
 
 // UnsetDefaltCols sets init data
 func (m *Common) UnsetDefaltCols() {
-	m.IsDeleted = false
-	m.IsEnabled = true
+	m.IsDeleted = ptr.Bool(false)
+	m.IsEnabled = ptr.Bool(true)
 	m.CreatedAt = nil
 	m.UpdatedAt = nil
 }

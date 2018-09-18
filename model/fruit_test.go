@@ -1,6 +1,10 @@
 package model
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/gemcook/ptr"
+)
 
 func TestFruitBody_IsValid(t *testing.T) {
 	type fields struct {
@@ -19,8 +23,8 @@ func TestFruitBody_IsValid(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f := &FruitBody{
-				Name:  tt.fields.Name,
-				Price: tt.fields.Price,
+				Name:  ptr.String(tt.fields.Name),
+				Price: ptr.Int(tt.fields.Price),
 			}
 			if got := f.IsValid(); got != tt.want {
 				t.Errorf("FruitBody.IsValid() = %v, want %v", got, tt.want)
