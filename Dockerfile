@@ -1,5 +1,8 @@
 FROM gemcook/golang:1.10.0 as builder
 
+# install depencencies.
+RUN apk add --update gcc musl-dev
+
 ENV APPDIR=github.com/gemcook/go-gin-xorm-starter
 
 WORKDIR /go/src/${APPDIR}
