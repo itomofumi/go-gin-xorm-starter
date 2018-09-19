@@ -1,12 +1,19 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/gemcook/go-gin-xorm-starter/controller"
 
 	"github.com/gin-gonic/gin"
 )
 
 func defineRoutes(r gin.IRouter) {
+
+	// Health Check
+	r.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "ok")
+	})
 
 	// v1
 	v1 := r.Group("/v1")
