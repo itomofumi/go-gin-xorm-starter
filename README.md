@@ -109,5 +109,5 @@ Run.
 Use `-e` and `--env-file` option to give environment variables.
 
 ```sh
-docker run -p 8888:80 -it --env-file .env -e DATABASE_HOST=mydbhost myimage/starter
+docker run -p 8888:80 --env-file .env -e DATABASE_HOST=mydbhost myimage/starter
 ```
