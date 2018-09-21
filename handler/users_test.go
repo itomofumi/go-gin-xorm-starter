@@ -1,4 +1,4 @@
-package controller_test
+package handler_test
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gemcook/go-gin-xorm-starter/controller"
+	"github.com/gemcook/go-gin-xorm-starter/handler"
 	"github.com/gemcook/go-gin-xorm-starter/model"
 	"github.com/gemcook/go-gin-xorm-starter/service"
 	"github.com/gemcook/ptr"
@@ -93,7 +93,7 @@ func TestGetMe(t *testing.T) {
 
 			c, w := createGinTestContext(registry)
 			c.Set("email", tt.args.email)
-			controller.GetMe(c)
+			handler.GetMe(c)
 			assert.Equal(t, tt.wantStatus, w.Code)
 
 			switch want := tt.want.(type) {
@@ -169,7 +169,7 @@ func TestPostUser(t *testing.T) {
 			b, _ := json.Marshal(tt.args.body)
 			c.Request, _ = http.NewRequest("POST", "/users", bytes.NewBuffer(b))
 
-			controller.PostUser(c)
+			handler.PostUser(c)
 
 			assert.Equal(t, tt.wantStatus, w.Code)
 

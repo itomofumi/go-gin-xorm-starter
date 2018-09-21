@@ -1,4 +1,4 @@
-package controller_test
+package handler_test
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Setup initializes controller test.
+// Setup initializes handler test.
 // call this func with "defer".
 func Setup() func() {
 	gin.SetMode(gin.ReleaseMode)

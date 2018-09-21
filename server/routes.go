@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/gemcook/go-gin-xorm-starter/controller"
+	"github.com/gemcook/go-gin-xorm-starter/handler"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,19 +20,19 @@ func defineRoutes(r gin.IRouter) {
 	v1withUser := v1.Group("/", AuthMiddleware(), UserMiddleware())
 
 	{
-		v1withUser.GET("/me", controller.GetMe)
-		v1withUser.GET("/user", controller.GetMe)
+		v1withUser.GET("/me", handler.GetMe)
+		v1withUser.GET("/user", handler.GetMe)
 	}
 
 	{
-		v1.POST("/users", controller.PostUser)
+		v1.POST("/users", handler.PostUser)
 	}
 
 	{
-		v1.GET("/fruits", controller.GetFruits)
-		v1.GET("/fruits/:fruit-id", RequirePathParam("fruit-id"), controller.GetFruitByID)
-		v1withUser.POST("/fruits", controller.PostFruit)
-		v1withUser.PUT("/fruits/:fruit-id", RequirePathParam("fruit-id"), controller.PutFruit)
-		v1withUser.DELETE("/fruits/:fruit-id", RequirePathParam("fruit-id"), controller.DeleteFruit)
+		v1.GET("/fruits", handler.GetFruits)
+		v1.GET("/fruits/:fruit-id", RequirePathParam("fruit-id"), handler.GetFruitByID)
+		v1withUser.POST("/fruits", handler.PostFruit)
+		v1withUser.PUT("/fruits/:fruit-id", RequirePathParam("fruit-id"), handler.PutFruit)
+		v1withUser.DELETE("/fruits/:fruit-id", RequirePathParam("fruit-id"), handler.DeleteFruit)
 	}
 }

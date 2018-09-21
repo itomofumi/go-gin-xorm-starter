@@ -1,4 +1,4 @@
-package controller_test
+package handler_test
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gemcook/go-gin-xorm-starter/controller"
+	"github.com/gemcook/go-gin-xorm-starter/handler"
 	"github.com/gemcook/go-gin-xorm-starter/model"
 	"github.com/gemcook/go-gin-xorm-starter/service"
 	"github.com/gemcook/ptr"
@@ -99,7 +99,7 @@ func TestGetFruits(t *testing.T) {
 			}
 
 			c, w := createGinTestContext(registry)
-			controller.GetFruits(c)
+			handler.GetFruits(c)
 			assert.Equal(t, tt.wantStatus, w.Code)
 
 			switch want := tt.want.(type) {
@@ -161,7 +161,7 @@ func TestGetFruitByID(t *testing.T) {
 
 			c, w := createGinTestContext(registry)
 			c.Set("fruit-id", tt.args.id)
-			controller.GetFruitByID(c)
+			handler.GetFruitByID(c)
 			assert.Equal(t, tt.wantStatus, w.Code)
 
 			switch want := tt.want.(type) {
@@ -230,7 +230,7 @@ func TestPostFruit(t *testing.T) {
 			b, _ := json.Marshal(tt.args.body)
 			c.Request, _ = http.NewRequest("POST", "/fruits", bytes.NewBuffer(b))
 
-			controller.PostFruit(c)
+			handler.PostFruit(c)
 
 			assert.Equal(t, tt.wantStatus, w.Code)
 
@@ -296,7 +296,7 @@ func TestPutFruit(t *testing.T) {
 			c.Request, _ = http.NewRequest("PUT", "/fruits/:fruit-id", bytes.NewBuffer(b))
 			c.Set("fruit-id", tt.args.id)
 
-			controller.PutFruit(c)
+			handler.PutFruit(c)
 
 			assert.Equal(t, tt.wantStatus, w.Code)
 
@@ -354,7 +354,7 @@ func TestDeleteFruit(t *testing.T) {
 			c, w := createGinTestContext(registry)
 			c.Set("fruit-id", tt.args.id)
 
-			controller.DeleteFruit(c)
+			handler.DeleteFruit(c)
 
 			assert.Equal(t, tt.wantStatus, w.Code)
 
