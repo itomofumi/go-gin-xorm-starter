@@ -40,9 +40,11 @@ func Setup(t *testing.T) (engine *xorm.Engine, cleanup func()) {
 		"-e", "TZ=Asia/Tokyo",
 		dockerMySQLImage)
 	rc, err := dockerRunCmd.StdoutPipe()
-	go func() {
-		io.Copy(os.Stdout, rc)
-	}()
+	if err == nil {
+		go func() {
+			io.Copy(os.Stdout, rc)
+		}()
+	}
 
 	err = dockerRunCmd.Start()
 	if err != nil {
