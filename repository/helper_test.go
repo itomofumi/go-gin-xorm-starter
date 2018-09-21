@@ -1,6 +1,8 @@
 package repository_test
 
 import (
+	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"syscall"
@@ -11,7 +13,7 @@ import (
 	"github.com/go-xorm/xorm"
 )
 
-var dockerMySQLContainerName = "go-gin-xorm-starter-test-mysql"
+var dockerMySQLImage = "mysql:5.7.21"
 var dockerMySQLPort = "11336"
 
 // Setup initializes test environment.
@@ -31,14 +33,18 @@ func Setup(t *testing.T) (engine *xorm.Engine, cleanup func()) {
 		t.Fatal(err)
 	}
 
-	cmd := exec.Command("docker", "container", "run",
+	dockerRunCmd := exec.Command("docker", "container", "run",
 		"--rm",
 		"-p", dockerMySQLPort+":3306",
 		"-e", "MYSQL_ROOT_PASSWORD=password",
 		"-e", "TZ=Asia/Tokyo",
-		"mysql:5.7.21")
+		dockerMySQLImage)
+	rc, err := dockerRunCmd.StdoutPipe()
+	go func() {
+		io.Copy(os.Stdout, rc)
+	}()
 
-	err = cmd.Start()
+	err = dockerRunCmd.Start()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,7 +69,22 @@ func Setup(t *testing.T) (engine *xorm.Engine, cleanup func()) {
 		engine.Close()
 
 		// send interrupt signal to docker command.
-		cmd.Process.Signal(syscall.SIGINT)
+		err = dockerRunCmd.Process.Signal(syscall.SIGINT)
+		if err != nil {
+			fmt.Println("SIGINT:", err)
+		}
+
+		err = dockerRunCmd.Wait()
+		if err != nil {
+			fmt.Println("dockerRunCmd.Wait()", err)
+		}
+
+		dockerRmImageCmd := exec.Command("sh", "-c", fmt.Sprintf(`'docker container rm -f $(docker container ps -q -f "ancestor=%s")'`, dockerMySQLImage))
+
+		err = dockerRmImageCmd.Run()
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
