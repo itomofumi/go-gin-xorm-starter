@@ -40,7 +40,8 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_LARGE
-        Image: gemcook/golang:1.10.0
+        Image: gemcook/golang:1.11.0
+        PrivilegedMode: true
         EnvironmentVariables:
           - Type: PLAINTEXT
             Name: COVERALLS_TOKEN
@@ -70,6 +71,8 @@ Resources:
                 - go get github.com/mattn/goveralls
             pre_build:
               commands:
+                # start docker daemon
+                - nohup dockerd-entrypoint.sh --storage-driver=overlay & timeout -t 15 sh -c "until docker info; do echo .; sleep 1; done"
                 # get git branch name
                 - export GIT_BRANCH=`git symbolic-ref HEAD --short 2>/dev/null`; if [ "$GIT_BRANCH" == "" ] ; then GIT_BRANCH=`git branch -a --contains HEAD | sed -n 2p | awk '{ printf $1 }'` && export GIT_BRANCH=${GIT_BRANCH#remotes/origin/} ; fi
                 - export BRANCH=$GIT_BRANCH
