@@ -21,7 +21,12 @@ var dockerMySQLPort = "11336"
 func Setup(t *testing.T) (engine *xorm.Engine, cleanup func()) {
 	if _, err := exec.LookPath("docker"); err != nil {
 		t.SkipNow()
-		return nil, func() {}
+	}
+
+	dockerInfoCmd := exec.Command("docker", "info")
+	err := dockerInfoCmd.Run()
+	if err != nil {
+		t.Skipf("docker daemon is not running. error=%v", err)
 	}
 
 	currentDir, err := os.Getwd()

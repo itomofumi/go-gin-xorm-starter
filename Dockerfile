@@ -1,4 +1,4 @@
-FROM gemcook/golang:1.10.0 as builder
+FROM gemcook/golang:1.11.0 as builder
 
 # install depencencies.
 RUN apk add --update gcc musl-dev
