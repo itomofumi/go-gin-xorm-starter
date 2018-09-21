@@ -87,11 +87,11 @@ func TestGetMe(t *testing.T) {
 			Users := &UsersMock{
 				FakeGetByEmail: tt.args.getByEmail,
 			}
-			registry := &RegistryMock{
+			factory := &ServiceFactoryMock{
 				UsersMock: Users,
 			}
 
-			c, w := createGinTestContext(registry)
+			c, w := createGinTestContext(factory)
 			c.Set("email", tt.args.email)
 			handler.GetMe(c)
 			assert.Equal(t, tt.wantStatus, w.Code)
@@ -161,11 +161,11 @@ func TestPostUser(t *testing.T) {
 			users := &UsersMock{
 				FakeCreate: tt.args.create,
 			}
-			registry := &RegistryMock{
+			factory := &ServiceFactoryMock{
 				UsersMock: users,
 			}
 
-			c, w := createGinTestContext(registry)
+			c, w := createGinTestContext(factory)
 			b, _ := json.Marshal(tt.args.body)
 			c.Request, _ = http.NewRequest("POST", "/users", bytes.NewBuffer(b))
 

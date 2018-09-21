@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
+	"github.com/gemcook/go-gin-xorm-starter/factory"
 	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/go-gin-xorm-starter/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -12,8 +12,8 @@ import (
 
 // GetFruits はフルーツ一覧取得
 func GetFruits(c *gin.Context) {
-	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
-	fruitsService := registry.NewFruits()
+	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	fruitsService := factory.NewFruits()
 	list, err := fruitsService.GetAll()
 
 	if err != nil {
@@ -26,8 +26,8 @@ func GetFruits(c *gin.Context) {
 // GetFruitByID はフルーツを取得します
 func GetFruitByID(c *gin.Context) {
 	fruitID := c.MustGet("fruit-id").(uint64)
-	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
-	fruitsService := registry.NewFruits()
+	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	fruitsService := factory.NewFruits()
 	fruit, err := fruitsService.GetByID(fruitID)
 
 	if err != nil {
@@ -39,8 +39,8 @@ func GetFruitByID(c *gin.Context) {
 
 // PostFruit はフルーツを登録します
 func PostFruit(c *gin.Context) {
-	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
-	fruitsService := registry.NewFruits()
+	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	fruitsService := factory.NewFruits()
 
 	fruitBody := model.FruitBody{}
 	if err := c.ShouldBindWith(&fruitBody, binding.JSON); err != nil || !fruitBody.IsValid() {
@@ -59,9 +59,9 @@ func PostFruit(c *gin.Context) {
 // PutFruit はフルーツを更新します
 func PutFruit(c *gin.Context) {
 	fruitID := c.MustGet("fruit-id").(uint64)
-	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
+	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
 
-	fruitsService := registry.NewFruits()
+	fruitsService := factory.NewFruits()
 
 	fruitBody := model.FruitBody{}
 	_ = c.ShouldBindWith(&fruitBody, binding.JSON)
@@ -77,9 +77,9 @@ func PutFruit(c *gin.Context) {
 // DeleteFruit はフルーツを削除します
 func DeleteFruit(c *gin.Context) {
 	fruitID := c.MustGet("fruit-id").(uint64)
-	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
+	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
 
-	fruitsService := registry.NewFruits()
+	fruitsService := factory.NewFruits()
 	err := fruitsService.Delete(fruitID)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err))

@@ -12,8 +12,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gemcook/go-gin-xorm-starter/factory"
+
 	"github.com/gemcook/go-gin-xorm-starter/infra"
-	"github.com/gemcook/go-gin-xorm-starter/service"
 	"github.com/gemcook/go-gin-xorm-starter/util"
 	"github.com/gemcook/gognito/auth"
 	"github.com/gin-gonic/gin"
@@ -99,8 +100,8 @@ func Start() error {
 
 	gin.DefaultErrorWriter = io.MultiWriter(os.Stderr, ginErrorLogWriter)
 
-	// service registryの初期化
-	registry := service.NewRegistry(engine)
+	// factoryの初期化
+	factory := factory.New(engine)
 
 	// Ginの初期化
 	r := gin.Default()
@@ -108,7 +109,7 @@ func Start() error {
 	// middlewareのロード
 	r.Use(LogMiddleware(loggerAccess, time.RFC3339, false))
 	r.Use(CORSMiddleware())
-	r.Use(ServiceRegistryMiddleware(registry))
+	r.Use(ServiceKeyMiddleware(factory))
 
 	// auth middlewareの準備
 	authenticator, err := auth.New(

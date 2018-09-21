@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gemcook/go-gin-xorm-starter/factory"
 	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/go-gin-xorm-starter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
 
 // GetMe はログイン情報を取得します
 func GetMe(c *gin.Context) {
-	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
-	usersService := registry.NewUsers()
+	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	usersService := factory.NewUsers()
 
 	email := c.MustGet("email").(string)
 
@@ -28,8 +28,8 @@ func GetMe(c *gin.Context) {
 
 // PostUser は新規ユーザー登録
 func PostUser(c *gin.Context) {
-	registry := c.MustGet(service.RegistryKey).(service.RegistryInterface)
-	userService := registry.NewUsers()
+	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	userService := factory.NewUsers()
 
 	body := model.UserCreateBody{}
 	err := c.ShouldBindWith(&body, binding.JSON)

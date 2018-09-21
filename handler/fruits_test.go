@@ -94,11 +94,11 @@ func TestGetFruits(t *testing.T) {
 			fruits := &FruitsMock{
 				FakeGetAll: tt.args.getAll,
 			}
-			registry := &RegistryMock{
+			factory := &ServiceFactoryMock{
 				FruitsMock: fruits,
 			}
 
-			c, w := createGinTestContext(registry)
+			c, w := createGinTestContext(factory)
 			handler.GetFruits(c)
 			assert.Equal(t, tt.wantStatus, w.Code)
 
@@ -155,11 +155,11 @@ func TestGetFruitByID(t *testing.T) {
 			fruits := &FruitsMock{
 				FakeGetByID: tt.args.getByID,
 			}
-			registry := &RegistryMock{
+			factory := &ServiceFactoryMock{
 				FruitsMock: fruits,
 			}
 
-			c, w := createGinTestContext(registry)
+			c, w := createGinTestContext(factory)
 			c.Set("fruit-id", tt.args.id)
 			handler.GetFruitByID(c)
 			assert.Equal(t, tt.wantStatus, w.Code)
@@ -222,11 +222,11 @@ func TestPostFruit(t *testing.T) {
 			fruits := &FruitsMock{
 				FakeCreate: tt.args.create,
 			}
-			registry := &RegistryMock{
+			factory := &ServiceFactoryMock{
 				FruitsMock: fruits,
 			}
 
-			c, w := createGinTestContext(registry)
+			c, w := createGinTestContext(factory)
 			b, _ := json.Marshal(tt.args.body)
 			c.Request, _ = http.NewRequest("POST", "/fruits", bytes.NewBuffer(b))
 
@@ -287,11 +287,11 @@ func TestPutFruit(t *testing.T) {
 			fruits := &FruitsMock{
 				FakeUpdate: tt.args.update,
 			}
-			registry := &RegistryMock{
+			factory := &ServiceFactoryMock{
 				FruitsMock: fruits,
 			}
 
-			c, w := createGinTestContext(registry)
+			c, w := createGinTestContext(factory)
 			b, _ := json.Marshal(tt.args.body)
 			c.Request, _ = http.NewRequest("PUT", "/fruits/:fruit-id", bytes.NewBuffer(b))
 			c.Set("fruit-id", tt.args.id)
@@ -347,11 +347,11 @@ func TestDeleteFruit(t *testing.T) {
 			fruits := &FruitsMock{
 				FakeDelete: tt.args.delete,
 			}
-			registry := &RegistryMock{
+			factory := &ServiceFactoryMock{
 				FruitsMock: fruits,
 			}
 
-			c, w := createGinTestContext(registry)
+			c, w := createGinTestContext(factory)
 			c.Set("fruit-id", tt.args.id)
 
 			handler.DeleteFruit(c)

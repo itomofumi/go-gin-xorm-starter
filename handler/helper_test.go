@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gemcook/go-gin-xorm-starter/factory"
 	"github.com/gemcook/go-gin-xorm-starter/model"
 	"github.com/gemcook/go-gin-xorm-starter/service"
 	"github.com/gin-gonic/gin"
@@ -20,27 +21,27 @@ func Setup() func() {
 	}
 }
 
-// RegistryMock はServiceRegistryのモック実装です
-type RegistryMock struct {
-	service.RegistryInterface
+// ServiceFactoryMock はServiceFactoryのモック実装です
+type ServiceFactoryMock struct {
+	factory.ServiceInitializer
 	FruitsMock service.FruitsInterface
 	UsersMock  service.UsersInterface
 }
 
 // NewFruits returns FruitsMock
-func (r *RegistryMock) NewFruits() service.FruitsInterface {
-	return r.FruitsMock
+func (sf *ServiceFactoryMock) NewFruits() service.FruitsInterface {
+	return sf.FruitsMock
 }
 
 // NewUsers returns UsersMock
-func (r *RegistryMock) NewUsers() service.UsersInterface {
-	return r.UsersMock
+func (sf *ServiceFactoryMock) NewUsers() service.UsersInterface {
+	return sf.UsersMock
 }
 
-func createGinTestContext(registry *RegistryMock) (*gin.Context, *httptest.ResponseRecorder) {
+func createGinTestContext(mock *ServiceFactoryMock) (*gin.Context, *httptest.ResponseRecorder) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	c.Set(service.RegistryKey, registry)
+	c.Set(factory.ServiceKey, mock)
 	return c, w
 }
 
