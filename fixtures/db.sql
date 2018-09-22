@@ -1,9 +1,9 @@
 
-DROP DATABASE IF EXISTS `go_gin_xorm_starter`;
+DROP DATABASE IF EXISTS `go-gin-xorm-starter`;
 
-CREATE DATABASE `go_gin_xorm_starter`;
+CREATE DATABASE `go-gin-xorm-starter`;
 
-USE `go_gin_xorm_starter`;
+USE `go-gin-xorm-starter`;
 
 /*
   CREATE TABLES

@@ -55,7 +55,7 @@ sh ./fixtures/init_db.sh
 
 Access Database using phpMyAdmin.
 
-open <http://localhost:9080/db_structure.php?db=go_gin_xorm_starter>
+open <http://localhost:9080/db_structure.php?db=go-gin-xorm-starter>
 
 Or, access Database using Adminer.
 
