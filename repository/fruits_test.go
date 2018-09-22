@@ -11,7 +11,7 @@ import (
 )
 
 func TestFruits_GetAll(t *testing.T) {
-	engine, cleanup := Setup(t)
+	engine, cleanup := setupDB(t)
 	defer cleanup()
 
 	fruits := repository.NewFruits(engine)
@@ -25,7 +25,7 @@ func TestFruits_GetAll(t *testing.T) {
 }
 
 func TestFruits_GetByID(t *testing.T) {
-	engine, cleanup := Setup(t)
+	engine, cleanup := setupDB(t)
 	defer cleanup()
 
 	fruits := repository.NewFruits(engine)
@@ -42,7 +42,7 @@ func TestFruits_GetByID(t *testing.T) {
 }
 
 func TestFruits_Create(t *testing.T) {
-	engine, cleanup := Setup(t)
+	engine, cleanup := setupDB(t)
 	defer cleanup()
 
 	fruits := repository.NewFruits(engine)
@@ -61,7 +61,7 @@ func TestFruits_Create(t *testing.T) {
 }
 
 func TestFruits_Update(t *testing.T) {
-	engine, cleanup := Setup(t)
+	engine, cleanup := setupDB(t)
 	defer cleanup()
 
 	fruits := repository.NewFruits(engine)
@@ -80,7 +80,7 @@ func TestFruits_Update(t *testing.T) {
 }
 
 func TestFruits_Delete(t *testing.T) {
-	engine, cleanup := Setup(t)
+	engine, cleanup := setupDB(t)
 	defer cleanup()
 
 	fruits := repository.NewFruits(engine)

@@ -1,12 +1,22 @@
 package repository_test
 
 import (
+	"bufio"
+	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
-	"syscall"
+	"strings"
 	"testing"
 	"time"
+
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/network"
+	"github.com/docker/go-connections/nat"
+	"github.com/moby/moby/client"
 
 	"github.com/gemcook/go-gin-xorm-starter/infra"
 	"github.com/go-xorm/core"
@@ -14,84 +24,136 @@ import (
 )
 
 var dockerMySQLImage = "mysql:5.7.21"
-var dockerMySQLPort = "11336"
+var dockerMySQLPort = "3306"
 var dockerMySQLName = "go-gin-xorm-starter-mysql" + dockerMySQLPort
 
-// Setup initializes test environment.
-// Call cleanup func with 'defer'.
-func Setup(t *testing.T) (engine *xorm.Engine, cleanup func()) {
+func TestMain(m *testing.M) {
 	if _, err := exec.LookPath("docker"); err != nil {
-		t.Skip("docker command is not installed")
+		fmt.Println("docker command is not installed")
+		os.Exit(0)
 	}
 
-	dockerInfoCmd := exec.Command("docker", "info")
-	err := dockerInfoCmd.Run()
+	cli, err := client.NewEnvClient()
 	if err != nil {
-		t.Skipf("docker daemon is not running. error=%v", err)
+		fmt.Println("failed to initialize docker client")
+		os.Exit(0)
 	}
 
-	removeMySQLDockerContainer()
-
-	currentDir, err := os.Getwd()
+	_, err = cli.Info(context.TODO())
 	if err != nil {
-		t.Fatal(err)
-	}
-	err = os.Chdir("..")
-	if err != nil {
-		t.Fatal(err)
+		fmt.Println(fmt.Errorf("docker daemon is not running. error=%v", err))
+		os.Exit(0)
 	}
 
+	cleanup := setupInfra()
+	defer cleanup()
+
+	ret := m.Run()
+	os.Exit(ret)
+}
+
+func setupInfra() (cleanup func()) {
 	setMySQLTestEnv()
 	mysqlConf := infra.LoadMySQLConfigEnv()
 
-	dockerRunCmd := exec.Command("docker", "container", "run",
-		"--rm",
-		"--name", dockerMySQLName,
-		"-p", dockerMySQLPort+":3306",
-		"-e", "MYSQL_ROOT_PASSWORD="+mysqlConf.Passwd,
-		"-e", "TZ=Asia/Tokyo",
-		dockerMySQLImage)
-
-	err = dockerRunCmd.Start()
+	cli, err := client.NewEnvClient()
 	if err != nil {
-		t.Fatal(err)
+		panic("failed to initialize docker client")
 	}
 
-	err = waitDbIsReady()
+	// start mysql if not running.
+	list := listMySQLDockerContainers(cli)
+	if len(list) == 0 {
+		created, err := cli.ContainerCreate(context.TODO(), &container.Config{
+			Image:        dockerMySQLImage,
+			ExposedPorts: nat.PortSet{nat.Port("3306"): struct{}{}},
+			Env: []string{
+				"MYSQL_ROOT_PASSWORD=" + mysqlConf.Passwd,
+				"TZ=Asia/Tokyo",
+			},
+			AttachStdout: true,
+		}, &container.HostConfig{
+			PortBindings: nat.PortMap{
+				nat.Port("3306"): []nat.PortBinding{{HostPort: dockerMySQLPort}},
+			},
+		}, &network.NetworkingConfig{}, dockerMySQLName)
+
+		if err != nil {
+			panic(fmt.Errorf("docker container create failed: %v", err))
+		}
+
+		err = cli.ContainerStart(context.TODO(), created.ID, types.ContainerStartOptions{})
+		if err != nil {
+			panic(fmt.Errorf("docker container start failed: %v", err))
+		}
+
+		reader, err := cli.ContainerLogs(context.TODO(), dockerMySQLName, types.ContainerLogsOptions{
+			ShowStdout: true,
+			ShowStderr: true,
+			Timestamps: false,
+			Follow:     true,
+			Tail:       "1000",
+		})
+
+		if err != nil {
+			panic(fmt.Errorf("docker container logs failed: %v", err))
+		}
+
+		sc := bufio.NewScanner(reader)
+		var timeoutSec int = 30
+		timeoutCh := time.After(time.Second * time.Duration(timeoutSec))
+	waitMySQL:
+		for {
+			select {
+			case <-timeoutCh:
+				panic(fmt.Errorf("mysql initialization timeout %v sec", timeoutSec))
+			default:
+				if sc.Scan() && strings.Contains(sc.Text(), "ready for connections") {
+					fmt.Println("mysql: ready for connections")
+					break waitMySQL
+				}
+			}
+		}
+
+		// wait additional few seconds.
+		time.Sleep(time.Second * 3)
+
+		// and check connection.
+		err = waitDbIsReady()
+
+		if err != nil {
+			panic("cannot connect to mysql")
+		}
+	}
+
+	return func() {
+		removeMySQLDockerContainer(cli, listMySQLDockerContainers(cli))
+	}
+}
+
+// Setup initializes mysql database for each case.
+// Call cleanup func with 'defer'.
+func setupDB(t *testing.T) (engine *xorm.Engine, cleanup func()) {
+	t.Helper()
+
+	err := waitDbIsReady()
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("waitDbIsReady() failed. %v", err)
 	}
 
 	initDatabase(t)
 
+	mysqlConf := infra.LoadMySQLConfigEnv()
 	engine, err = infra.InitMySQLEngine(mysqlConf)
 	if err != nil {
 		t.Fatal(err)
 	}
 	engine.ShowSQL(false)
-	engine.SetConnMaxLifetime(time.Millisecond * 1)
+	engine.SetConnMaxLifetime(time.Second * 1)
 
 	// clean up function.
 	return engine, func() {
-		if t.Skipped() {
-			return
-		}
-
-		defer os.Chdir(currentDir)
 		engine.Close()
-
-		// send interrupt signal to docker command.
-		err = dockerRunCmd.Process.Signal(syscall.SIGINT)
-		if err != nil {
-			fmt.Println("SIGINT:", err)
-		}
-
-		err = dockerRunCmd.Wait()
-		if err != nil {
-			fmt.Println("dockerRunCmd.Wait()", err)
-		}
-
-		removeMySQLDockerContainer()
 	}
 }
 
@@ -104,12 +166,28 @@ func setMySQLTestEnv() {
 	os.Setenv("LOG_DIR", "log/test")
 }
 
-func removeMySQLDockerContainer() {
-	dockerRmImageCmd := exec.Command("sh", "-c", fmt.Sprintf(`'docker container rm -f $(docker container ps -q -f "name=%s")'`, dockerMySQLName))
+func listMySQLDockerContainers(cli *client.Client) []types.Container {
+	filterMap := map[string][]string{"name": {dockerMySQLName}}
+	filterBytes, _ := json.Marshal(filterMap)
+	filter, _ := filters.FromParam(string(filterBytes))
 
-	err := dockerRmImageCmd.Run()
+	opts := types.ContainerListOptions{
+		Filters: filter,
+	}
+
+	list, err := cli.ContainerList(context.TODO(), opts)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
+	}
+	return list
+}
+
+func removeMySQLDockerContainer(cli *client.Client, targets []types.Container) {
+	for _, t := range targets {
+		err := cli.ContainerRemove(context.TODO(), t.ID, types.ContainerRemoveOptions{
+			Force: true,
+		})
+		panic(err)
 	}
 }
 
@@ -121,27 +199,38 @@ func waitDbIsReady() error {
 		return err
 	}
 
-	engine.SetConnMaxLifetime(time.Millisecond * 1)
+	engine.SetConnMaxLifetime(time.Second * 1)
 	engine.ShowSQL(false)
 	engine.Logger().SetLevel(core.LOG_WARNING)
 
-	retry := 10
+	retry := 15
 	for i := 0; i < retry; i++ {
 		err := engine.Ping()
 		if err == nil {
+			fmt.Println("db connection established")
 			return nil
 		}
-		fmt.Println(err)
-		time.Sleep(time.Duration(100 * time.Millisecond))
+		time.Sleep(time.Duration(1000 * time.Millisecond))
 	}
 	return fmt.Errorf("cannot connect to host: %v", mysqlConf.Addr)
 }
 
 func initDatabase(t *testing.T) {
+	t.Helper()
+	currentDir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = os.Chdir("..")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Chdir(currentDir)
+
 	mysqlConf := infra.LoadMySQLConfigEnv()
 	mysqlConf.DBName = ""
 	connStr := mysqlConf.FormatDSN()
-	err := infra.RunSQLFile(connStr, "./fixtures/db.sql")
+	err = infra.RunSQLFile(connStr, "./fixtures/db.sql")
 	if err != nil {
 		t.Fatal(err)
 	}

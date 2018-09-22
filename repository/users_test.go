@@ -9,7 +9,7 @@ import (
 )
 
 func TestUsers_GetByEmail(t *testing.T) {
-	engine, cleanup := Setup(t)
+	engine, cleanup := setupDB(t)
 	defer cleanup()
 
 	users := repository.NewUsers(engine)
@@ -25,7 +25,7 @@ func TestUsers_GetByEmail(t *testing.T) {
 }
 
 func TestUsers_Create(t *testing.T) {
-	engine, cleanup := Setup(t)
+	engine, cleanup := setupDB(t)
 	defer cleanup()
 
 	users := repository.NewUsers(engine)
@@ -45,7 +45,7 @@ func TestUsers_Create(t *testing.T) {
 }
 
 func TestUsers_Update(t *testing.T) {
-	engine, cleanup := Setup(t)
+	engine, cleanup := setupDB(t)
 	defer cleanup()
 
 	users := repository.NewUsers(engine)
@@ -65,7 +65,7 @@ func TestUsers_Update(t *testing.T) {
 }
 
 func TestUsers_Delete(t *testing.T) {
-	engine, cleanup := Setup(t)
+	engine, cleanup := setupDB(t)
 	defer cleanup()
 
 	users := repository.NewUsers(engine)
