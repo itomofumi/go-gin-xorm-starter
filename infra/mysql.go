@@ -50,7 +50,7 @@ func InitMySQLEngine(conf *mysql.Config) (*xorm.Engine, error) {
 	return engine, nil
 }
 
-// ParseLogLevel parses level string into xorm's LogLevel
+// parseLogLevel parses level string into xorm's LogLevel
 func parseLogLevel(lvl string) (core.LogLevel, error) {
 	switch strings.ToLower(lvl) {
 	case "panic", "fatal", "error":
