@@ -24,6 +24,23 @@ func TestUsers_GetByEmail(t *testing.T) {
 	assert.EqualValues(email, result.Email)
 }
 
+func TestUsers_GetByID(t *testing.T) {
+	engine, cleanup := setupDB(t)
+	defer cleanup()
+
+	users := repository.NewUsers(engine)
+
+	var id uint64 = 1
+	result, ok := users.GetByID(id)
+
+	if !ok {
+		t.Fatalf("Users.GetByID() failed")
+	}
+
+	assert := assert.New(t)
+	assert.Equal(id, result.UserID)
+}
+
 func TestUsers_Create(t *testing.T) {
 	engine, cleanup := setupDB(t)
 	defer cleanup()
@@ -42,6 +59,26 @@ func TestUsers_Create(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.EqualValues(name, *result.DisplayName)
+}
+
+func TestUsers_Verify(t *testing.T) {
+	engine, cleanup := setupDB(t)
+	defer cleanup()
+
+	users := repository.NewUsers(engine)
+
+	name := "foobar"
+	email := "foobar@example.com"
+	body := model.UserProfile{
+		DisplayName: &name,
+	}
+	result, err := users.Create(email, &body)
+	if !assert.NoErrorf(t, err, "Users.Create() returned error") {
+		return
+	}
+
+	err = users.Verify(result.UserID)
+	assert.NoError(t, err)
 }
 
 func TestUsers_Update(t *testing.T) {

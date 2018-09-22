@@ -59,6 +59,7 @@ func (u *Users) GetByID(id uint64) (user *model.User, ok bool) {
 	if err != nil || !ok {
 		return nil, false
 	}
+	user.UserID = id
 	return user, true
 }
 
