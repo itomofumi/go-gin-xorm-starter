@@ -23,7 +23,7 @@ import (
 	"github.com/go-xorm/xorm"
 )
 
-var dockerMySQLImage = "docker.io/library/mysql:5.7.21"
+var dockerMySQLImage = "mysql:5.7.21"
 var dockerMySQLPort = "3306"
 var dockerMySQLName = "go-gin-xorm-starter-mysql" + dockerMySQLPort
 
@@ -64,6 +64,8 @@ func setupInfra() (cleanup func()) {
 	// start mysql if not running.
 	list := listMySQLDockerContainers(cli)
 	if len(list) == 0 {
+		pullMySQLDockerImage(cli)
+
 		created, err := cli.ContainerCreate(context.TODO(), &container.Config{
 			Image:        dockerMySQLImage,
 			ExposedPorts: nat.PortSet{nat.Port("3306"): struct{}{}},
@@ -164,6 +166,38 @@ func setMySQLTestEnv() {
 	os.Setenv("DATABASE_PASSWORD", "password")
 	os.Setenv("LOG_LEVEL", "debug")
 	os.Setenv("LOG_DIR", "log/test")
+}
+
+func pullMySQLDockerImage(cli *client.Client) {
+	filterMap := map[string][]string{"reference": {dockerMySQLImage}}
+	filterBytes, _ := json.Marshal(filterMap)
+	filter, err := filters.FromParam(string(filterBytes))
+	if err != nil {
+		panic(err)
+	}
+
+	images, err := cli.ImageList(context.TODO(), types.ImageListOptions{
+		All:     true,
+		Filters: filter,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	if len(images) == 0 {
+		reader, err := cli.ImagePull(context.TODO(), dockerMySQLImage, types.ImagePullOptions{})
+		if err != nil {
+			panic(err)
+		}
+		sc := bufio.NewScanner(reader)
+		for sc.Scan() {
+			text := sc.Text()
+			if strings.Contains(text, "Downloading") || strings.Contains(text, "Extracting") {
+				continue
+			}
+			fmt.Println(text)
+		}
+	}
 }
 
 func listMySQLDockerContainers(cli *client.Client) []types.Container {
