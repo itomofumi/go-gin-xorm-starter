@@ -19,9 +19,6 @@ type ErrorResponseInner struct {
 
 // Append adds an error to ErrorResponse
 func (res *ErrorResponse) Append(code string, t ErrorType, messages ...interface{}) {
-	if len(messages) > 1 {
-
-	}
 	errRes := &ErrorResponseInner{
 		Messages: msgToStrings(messages),
 		Code:     code,
@@ -39,6 +36,7 @@ func (res ErrorResponse) String() string {
 func msgToStrings(messages []interface{}) []string {
 	results := make([]string, 0, len(messages))
 	for _, m := range messages {
+
 		switch v := m.(type) {
 		case string:
 			results = append(results, v)
@@ -46,6 +44,8 @@ func msgToStrings(messages []interface{}) []string {
 			results = append(results, v.Error())
 		case fmt.Stringer:
 			results = append(results, v.String())
+		default:
+			results = append(results, fmt.Sprint(v))
 		}
 	}
 	return results

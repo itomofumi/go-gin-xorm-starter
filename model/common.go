@@ -20,8 +20,8 @@ func (Common) TableName() string {
 	return ""
 }
 
-// UnsetDefaltCols sets init data
-func (m *Common) UnsetDefaltCols() {
+// SetDefault sets init data
+func (m *Common) SetDefault() {
 	m.IsDeleted = ptr.Bool(false)
 	m.IsEnabled = ptr.Bool(true)
 	m.CreatedAt = nil

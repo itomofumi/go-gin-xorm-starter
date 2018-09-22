@@ -66,7 +66,7 @@ func (u *Users) GetByID(id uint64) (user *model.User, ok bool) {
 // Create adds a new user.
 func (u *Users) Create(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
 	user := model.User{}
-	user.Common.UnsetDefaltCols()
+	user.Common.SetDefault()
 	user.Email = email
 	user.EmailVerified = ptr.Bool(false)
 	user.DisplayName = profile.DisplayName
