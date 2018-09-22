@@ -23,7 +23,7 @@ import (
 	"github.com/go-xorm/xorm"
 )
 
-var dockerMySQLImage = "mysql:5.7.21"
+var dockerMySQLImage = "docker.io/library/mysql:5.7.21"
 var dockerMySQLPort = "3306"
 var dockerMySQLName = "go-gin-xorm-starter-mysql" + dockerMySQLPort
 
