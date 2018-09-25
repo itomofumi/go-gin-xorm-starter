@@ -12,7 +12,7 @@ type EngineMock struct {
 }
 
 func TestNew(t *testing.T) {
-	factory := factory.New(&EngineMock{})
+	factory := factory.NewService(&EngineMock{})
 	factory.NewFruits()
 	factory.NewUsers()
 }

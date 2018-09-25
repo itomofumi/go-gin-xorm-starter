@@ -11,8 +11,8 @@ const (
 	ServiceKey = "service_factory"
 )
 
-// ServiceInitializer はサービスファクトリ
-type ServiceInitializer interface {
+// Servicer はサービスファクトリ
+type Servicer interface {
 	NewUsers() service.UsersInterface
 	NewFruits() service.FruitsInterface
 }
@@ -23,8 +23,8 @@ type ServiceFactory struct {
 	engine infra.EngineInterface
 }
 
-// New initializes factory with injected orm.
-func New(engine infra.EngineInterface) *ServiceFactory {
+// NewService initializes factory with injected infra.
+func NewService(engine infra.EngineInterface) *ServiceFactory {
 	r := &ServiceFactory{
 		engine: engine,
 	}

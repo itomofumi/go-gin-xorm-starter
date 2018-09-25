@@ -6,7 +6,7 @@ import (
 )
 
 // ServiceKeyMiddleware provides the service factory
-func ServiceKeyMiddleware(si factory.ServiceInitializer) gin.HandlerFunc {
+func ServiceKeyMiddleware(si factory.Servicer) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set(factory.ServiceKey, si)
 		c.Next()

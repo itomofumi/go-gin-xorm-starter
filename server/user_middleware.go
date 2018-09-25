@@ -49,7 +49,7 @@ func OptionalUserMiddleware() gin.HandlerFunc {
 
 // UserHandler は認証情報からユーザー取得を行う
 func UserHandler(c *gin.Context) error {
-	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	factory := c.MustGet(factory.ServiceKey).(factory.Servicer)
 	userSrv := factory.NewUsers()
 
 	// ID Tokenのemailはエンドユーザー身元識別子

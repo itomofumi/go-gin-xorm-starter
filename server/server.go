@@ -100,8 +100,8 @@ func Start() error {
 
 	gin.DefaultErrorWriter = io.MultiWriter(os.Stderr, ginErrorLogWriter)
 
-	// factoryの初期化
-	factory := factory.New(engine)
+	// service factoryの初期化
+	factory := factory.NewService(engine)
 
 	// Ginの初期化
 	r := gin.Default()

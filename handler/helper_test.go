@@ -23,7 +23,7 @@ func Setup() func() {
 
 // ServiceFactoryMock はServiceFactoryのモック実装です
 type ServiceFactoryMock struct {
-	factory.ServiceInitializer
+	factory.Servicer
 	FruitsMock service.FruitsInterface
 	UsersMock  service.UsersInterface
 }

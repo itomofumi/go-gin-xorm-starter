@@ -12,7 +12,7 @@ import (
 
 // GetFruits はフルーツ一覧取得
 func GetFruits(c *gin.Context) {
-	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	factory := c.MustGet(factory.ServiceKey).(factory.Servicer)
 	fruitsService := factory.NewFruits()
 	list, err := fruitsService.GetAll()
 
@@ -26,7 +26,7 @@ func GetFruits(c *gin.Context) {
 // GetFruitByID はフルーツを取得します
 func GetFruitByID(c *gin.Context) {
 	fruitID := c.MustGet("fruit-id").(uint64)
-	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	factory := c.MustGet(factory.ServiceKey).(factory.Servicer)
 	fruitsService := factory.NewFruits()
 	fruit, err := fruitsService.GetByID(fruitID)
 
@@ -39,7 +39,7 @@ func GetFruitByID(c *gin.Context) {
 
 // PostFruit はフルーツを登録します
 func PostFruit(c *gin.Context) {
-	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	factory := c.MustGet(factory.ServiceKey).(factory.Servicer)
 	fruitsService := factory.NewFruits()
 
 	fruitBody := model.FruitBody{}
@@ -59,7 +59,7 @@ func PostFruit(c *gin.Context) {
 // PutFruit はフルーツを更新します
 func PutFruit(c *gin.Context) {
 	fruitID := c.MustGet("fruit-id").(uint64)
-	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	factory := c.MustGet(factory.ServiceKey).(factory.Servicer)
 
 	fruitsService := factory.NewFruits()
 
@@ -77,7 +77,7 @@ func PutFruit(c *gin.Context) {
 // DeleteFruit はフルーツを削除します
 func DeleteFruit(c *gin.Context) {
 	fruitID := c.MustGet("fruit-id").(uint64)
-	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	factory := c.MustGet(factory.ServiceKey).(factory.Servicer)
 
 	fruitsService := factory.NewFruits()
 	err := fruitsService.Delete(fruitID)

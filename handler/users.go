@@ -12,7 +12,7 @@ import (
 
 // GetMe はログイン情報を取得します
 func GetMe(c *gin.Context) {
-	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	factory := c.MustGet(factory.ServiceKey).(factory.Servicer)
 	usersService := factory.NewUsers()
 
 	email := c.MustGet("email").(string)
@@ -28,7 +28,7 @@ func GetMe(c *gin.Context) {
 
 // PostUser は新規ユーザー登録
 func PostUser(c *gin.Context) {
-	factory := c.MustGet(factory.ServiceKey).(factory.ServiceInitializer)
+	factory := c.MustGet(factory.ServiceKey).(factory.Servicer)
 	userService := factory.NewUsers()
 
 	body := model.UserCreateBody{}
