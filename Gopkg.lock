@@ -314,6 +314,11 @@
   analyzer-version = 1
   input-imports = [
     "github.com/dgrijalva/jwt-go",
+    "github.com/docker/docker/api/types",
+    "github.com/docker/docker/api/types/container",
+    "github.com/docker/docker/api/types/filters",
+    "github.com/docker/docker/api/types/network",
+    "github.com/docker/go-connections/nat",
     "github.com/gemcook/gognito/auth",
     "github.com/gemcook/ptr",
     "github.com/gin-gonic/gin",
