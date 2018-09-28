@@ -24,7 +24,7 @@ import (
 )
 
 var dockerMySQLImage = "mysql:5.7.21"
-var dockerMySQLPort = "3306"
+var dockerMySQLPort = "23306"
 var dockerMySQLName = "go-gin-xorm-starter-mysql" + dockerMySQLPort
 
 func TestMain(m *testing.M) {
@@ -46,9 +46,11 @@ func TestMain(m *testing.M) {
 	}
 
 	cleanup := setupInfra()
-	defer cleanup()
 
 	ret := m.Run()
+
+	cleanup()
+
 	os.Exit(ret)
 }
 
@@ -129,7 +131,8 @@ func setupInfra() (cleanup func()) {
 	}
 
 	return func() {
-		removeMySQLDockerContainer(cli, listMySQLDockerContainers(cli))
+		// currently DO NOT remove mysql container for usability to iterate test.
+		// removeMySQLDockerContainer(cli, listMySQLDockerContainers(cli))
 	}
 }
 
@@ -221,7 +224,10 @@ func removeMySQLDockerContainer(cli *client.Client, targets []types.Container) {
 		err := cli.ContainerRemove(context.TODO(), t.ID, types.ContainerRemoveOptions{
 			Force: true,
 		})
-		panic(err)
+
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
