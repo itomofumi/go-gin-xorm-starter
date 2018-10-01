@@ -17,28 +17,28 @@ type Servicer interface {
 	NewFruits() service.FruitsInterface
 }
 
-// ServiceFactory はサービスファクトリの実装
+// Service はサービスファクトリの実装
 // インフラ層の依存情報を初期化時に注入する
-type ServiceFactory struct {
+type Service struct {
 	engine infra.EngineInterface
 }
 
 // NewService initializes factory with injected infra.
-func NewService(engine infra.EngineInterface) *ServiceFactory {
-	r := &ServiceFactory{
+func NewService(engine infra.EngineInterface) *Service {
+	r := &Service{
 		engine: engine,
 	}
 	return r
 }
 
 // NewFruits returns Fruits service.
-func (r *ServiceFactory) NewFruits() service.FruitsInterface {
+func (r *Service) NewFruits() service.FruitsInterface {
 	repo := repository.NewFruits(r.engine)
 	return service.NewFruits(repo)
 }
 
 // NewUsers returns Users service.
-func (r *ServiceFactory) NewUsers() service.UsersInterface {
+func (r *Service) NewUsers() service.UsersInterface {
 	repo := repository.NewUsers(r.engine)
 	return service.NewUsers(repo)
 }
