@@ -1,7 +1,7 @@
-/.git
+.git
 Dockerfile
 docker-compose.yml
 LICENSE
 README.md
 .gitignore
-/vendor
+vendor

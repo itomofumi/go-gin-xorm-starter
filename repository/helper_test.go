@@ -65,7 +65,13 @@ func setupInfra() (cleanup func()) {
 
 	// start mysql if not running.
 	list := listMySQLDockerContainers(cli)
-	if len(list) == 0 {
+
+	exitedAll := areAllContainersExited(list)
+	if exitedAll {
+		removeMySQLDockerContainer(cli, list)
+	}
+
+	if len(list) == 0 || exitedAll {
 		pullMySQLDockerImage(cli)
 
 		created, err := cli.ContainerCreate(context.TODO(), &container.Config{
@@ -210,6 +216,7 @@ func listMySQLDockerContainers(cli *client.Client) []types.Container {
 
 	opts := types.ContainerListOptions{
 		Filters: filter,
+		All:     true,
 	}
 
 	list, err := cli.ContainerList(context.TODO(), opts)
@@ -217,6 +224,15 @@ func listMySQLDockerContainers(cli *client.Client) []types.Container {
 		panic(err)
 	}
 	return list
+}
+
+func areAllContainersExited(containers []types.Container) bool {
+	for _, c := range containers {
+		if c.State != "exited" {
+			return false
+		}
+	}
+	return true
 }
 
 func removeMySQLDockerContainer(cli *client.Client, targets []types.Container) {
