@@ -5,7 +5,7 @@ import (
 	"github.com/gemcook/go-gin-xorm-starter/repository"
 )
 
-// FruitsInterface はフルーツサービスのインタフェース
+// FruitsInterface defines fruits service interface.
 type FruitsInterface interface {
 	GetAll() ([]*model.Fruit, error)
 	GetByID(fruitID uint64) (*model.Fruit, error)
@@ -14,38 +14,38 @@ type FruitsInterface interface {
 	Delete(fruitID uint64) error
 }
 
-// Fruits はフルーツサービス
+// Fruits implements fruits service.
 type Fruits struct {
 	repo repository.FruitsInterface
 }
 
-// NewFruits はフルーツサービスの初期化
+// NewFruits initializes fruits service.
 func NewFruits(repo repository.FruitsInterface) FruitsInterface {
-	c := Fruits{repo}
-	return &c
+	f := Fruits{repo}
+	return &f
 }
 
-// GetAll はフルーツを全て取得します
-func (n *Fruits) GetAll() ([]*model.Fruit, error) {
-	return n.repo.GetAll()
+// GetAll returns all fruits.
+func (f *Fruits) GetAll() ([]*model.Fruit, error) {
+	return f.repo.GetAll()
 }
 
-// GetByID は指定のフルーツを取得します
-func (n *Fruits) GetByID(fruitID uint64) (*model.Fruit, error) {
-	return n.repo.GetByID(fruitID)
+// GetByID returns a fruit specified by the given id.
+func (f *Fruits) GetByID(fruitID uint64) (*model.Fruit, error) {
+	return f.repo.GetByID(fruitID)
 }
 
-// Create はフルーツを新規追加します
-func (n *Fruits) Create(body *model.FruitBody) (*model.Fruit, error) {
-	return n.repo.Create(body)
+// Create creates a new fruit.
+func (f *Fruits) Create(body *model.FruitBody) (*model.Fruit, error) {
+	return f.repo.Create(body)
 }
 
-// Update はフルーツを更新します
-func (n *Fruits) Update(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
-	return n.repo.Update(fruitID, body)
+// Update updates a fruit specified by the given id.
+func (f *Fruits) Update(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
+	return f.repo.Update(fruitID, body)
 }
 
-// Delete はフルーツを削除します
-func (n *Fruits) Delete(fruitID uint64) error {
-	return n.repo.Delete(fruitID)
+// Delete deletes a fruit specified by the given id.
+func (f *Fruits) Delete(fruitID uint64) error {
+	return f.repo.Delete(fruitID)
 }

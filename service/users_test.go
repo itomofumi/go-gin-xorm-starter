@@ -11,8 +11,8 @@ import (
 	"github.com/gemcook/ptr"
 )
 
-// UsersRepositoryMock is a mock for Users repository.
-type UsersRepositoryMock struct {
+// usersRepositoryMock is a mock for Users repository.
+type usersRepositoryMock struct {
 	repository.UsersInterface
 	FakeGetByEmail func(email string) (user *model.User, ok bool)
 	FakeCreate     func(email string, profile *model.UserProfile) (*model.UserPublicData, error)
@@ -22,27 +22,27 @@ type UsersRepositoryMock struct {
 	FakeUpdate     func(id uint64, profile *model.UserProfile) (*model.UserPublicData, error)
 }
 
-func (ur *UsersRepositoryMock) GetByEmail(email string) (user *model.User, ok bool) {
+func (ur *usersRepositoryMock) GetByEmail(email string) (user *model.User, ok bool) {
 	return ur.FakeGetByEmail(email)
 }
 
-func (ur *UsersRepositoryMock) Create(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
+func (ur *usersRepositoryMock) Create(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
 	return ur.FakeCreate(email, profile)
 }
 
-func (ur *UsersRepositoryMock) Delete(id uint64) error {
+func (ur *usersRepositoryMock) Delete(id uint64) error {
 	return ur.FakeDelete(id)
 }
 
-func (ur *UsersRepositoryMock) GetByID(id uint64) (user *model.User, ok bool) {
+func (ur *usersRepositoryMock) GetByID(id uint64) (user *model.User, ok bool) {
 	return ur.FakeGetByID(id)
 }
 
-func (ur *UsersRepositoryMock) Verify(userID uint64) error {
+func (ur *usersRepositoryMock) Verify(userID uint64) error {
 	return ur.FakeVerify(userID)
 }
 
-func (ur *UsersRepositoryMock) Update(id uint64, profile *model.UserProfile) (*model.UserPublicData, error) {
+func (ur *usersRepositoryMock) Update(id uint64, profile *model.UserProfile) (*model.UserPublicData, error) {
 	return ur.FakeUpdate(id, profile)
 }
 
@@ -131,7 +131,7 @@ func TestUsers_Create(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := &UsersRepositoryMock{
+			repo := &usersRepositoryMock{
 				FakeCreate:     tt.fakes.create,
 				FakeGetByEmail: tt.fakes.getByEmail,
 				FakeDelete:     tt.fakes.delete,
@@ -182,7 +182,7 @@ func TestUsers_Verify(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := &UsersRepositoryMock{
+			repo := &usersRepositoryMock{
 				FakeVerify: tt.fakes.verify,
 			}
 			u := service.NewUsers(repo)
@@ -237,7 +237,7 @@ func TestUsers_GetByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := &UsersRepositoryMock{
+			repo := &usersRepositoryMock{
 				FakeGetByID: tt.fakes.getByID,
 			}
 			u := service.NewUsers(repo)
@@ -286,7 +286,7 @@ func TestUsers_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo := &UsersRepositoryMock{
+			repo := &usersRepositoryMock{
 				FakeUpdate: tt.fakes.update,
 			}
 			u := service.NewUsers(repo)
