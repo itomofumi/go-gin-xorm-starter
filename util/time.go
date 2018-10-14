@@ -7,9 +7,9 @@ import "time"
 var GetTimeNowFunc = time.Now
 
 // GetTimeNow は現在時刻を返す
-func GetTimeNow() *time.Time {
+func GetTimeNow() time.Time {
 	now := GetTimeNowFunc()
-	return &now
+	return now
 }
 
 // GetFormatedTimeNow はDB用フォーマット済みの現在時刻を返す

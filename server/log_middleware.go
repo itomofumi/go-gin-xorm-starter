@@ -5,8 +5,7 @@ package server
 // Based on github.com/stephenmuss/ginerus but adds more options.
 
 import (
-	"time"
-
+	"github.com/gemcook/go-gin-xorm-starter/util"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -25,13 +24,13 @@ type loggerEntryWithFields interface {
 //   2. A boolean stating whether to use UTC time zone or local.
 func LogMiddleware(logger loggerEntryWithFields, timeFormat string, utc bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		start := time.Now()
+		start := util.GetTimeNow()
 		// some evil middlewares modify this values
 		path := c.Request.URL.Path
 		query := c.Request.URL.RawQuery
 		c.Next()
 
-		end := time.Now()
+		end := util.GetTimeNow()
 		latency := end.Sub(start)
 		if utc {
 			end = end.UTC()

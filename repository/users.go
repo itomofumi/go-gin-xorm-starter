@@ -72,7 +72,7 @@ func (u *Users) Create(email string, profile *model.UserProfile) (*model.UserPub
 	user.DisplayName = profile.DisplayName
 	user.About = profile.About
 	user.AvatarURL = profile.AvatarURL
-	user.LastLoginAt = util.GetTimeNow()
+	user.LastLoginAt = ptr.Time(util.GetTimeNow())
 
 	session := u.engine.NewSession()
 	defer session.Close()
