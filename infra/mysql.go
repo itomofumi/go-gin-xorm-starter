@@ -104,20 +104,23 @@ func RunSQLFile(mysqlConnectionString, sqlFilepath string) error {
 	return nil
 }
 
+var escapeReplace = []struct {
+	Key      string
+	Replaced string
+}{
+	{"\\", "\\\\"},
+	{`'`, `\'`},
+	{"\\0", "\\\\0"},
+	{"\n", "\\n"},
+	{"\r", "\\r"},
+	{`"`, `\"`},
+	{"\x1a", "\\Z"},
+}
+
 // EscapeMySQLString prevents from SQL-injection.
 func EscapeMySQLString(value string) string {
-	replace := map[string]string{
-		"\\":   "\\\\",
-		"'":    `\'`,
-		"\\0":  "\\\\0",
-		"\n":   "\\n",
-		"\r":   "\\r",
-		`"`:    `\"`,
-		"\x1a": "\\Z",
-	}
-
-	for b, a := range replace {
-		value = strings.Replace(value, b, a, -1)
+	for _, r := range escapeReplace {
+		value = strings.Replace(value, r.Key, r.Replaced, -1)
 	}
 
 	return value
