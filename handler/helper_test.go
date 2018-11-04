@@ -9,6 +9,7 @@ import (
 	"github.com/gemcook/go-gin-xorm-starter/model"
 	"github.com/gemcook/go-gin-xorm-starter/service"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,6 +17,9 @@ import (
 // call this func with "defer".
 func Setup() func() {
 	gin.SetMode(gin.ReleaseMode)
+	// override gin validator
+	binding.Validator = &model.StructValidator{}
+
 	return func() {
 		gin.SetMode(gin.DebugMode)
 	}

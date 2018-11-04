@@ -59,3 +59,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/gemcook/ptr"
+
+[[constraint]]
+  name = "gopkg.in/go-playground/validator.v9"
+  version = "9.22.0"

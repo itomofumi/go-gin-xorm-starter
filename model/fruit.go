@@ -1,5 +1,7 @@
 package model
 
+import "github.com/go-playground/validator"
+
 // Fruit is a model
 type Fruit struct {
 	Common    `xorm:"extends"`
@@ -8,7 +10,7 @@ type Fruit struct {
 
 // FruitBody the main data
 type FruitBody struct {
-	Name  *string `json:"name"`
+	Name  *string `json:"name" binding:"required,min=1"`
 	Price *int    `json:"price"`
 }
 
@@ -17,13 +19,12 @@ func (Fruit) TableName() string {
 	return "fruits"
 }
 
-// IsValid checks fruit data.
-func (f *FruitBody) IsValid() bool {
-	if f.Name == nil || *f.Name == "" {
-		return false
+// FruitBodyStructLevelValidation contains FruitBody custom struct level validations.
+func FruitBodyStructLevelValidation(sl validator.StructLevel) {
+
+	fruitBody := sl.Current().Interface().(FruitBody)
+
+	if fruitBody.Price == nil || *fruitBody.Price < 0 {
+		sl.ReportError(fruitBody.Price, "Price", "price", "notminus", "")
 	}
-	if f.Price == nil || *f.Price < 0 {
-		return false
-	}
-	return true
 }

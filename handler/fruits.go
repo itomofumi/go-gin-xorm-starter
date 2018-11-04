@@ -43,7 +43,7 @@ func PostFruit(c *gin.Context) {
 	fruitsService := factory.NewFruits()
 
 	fruitBody := model.FruitBody{}
-	if err := c.ShouldBindWith(&fruitBody, binding.JSON); err != nil || !fruitBody.IsValid() {
+	if err := c.ShouldBindWith(&fruitBody, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, model.NewErrorResponse("400", model.ErrorParam, err))
 		return
 	}

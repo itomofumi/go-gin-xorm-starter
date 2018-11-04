@@ -13,11 +13,13 @@ import (
 	"time"
 
 	"github.com/gemcook/go-gin-xorm-starter/factory"
+	"github.com/gemcook/go-gin-xorm-starter/model"
 
 	"github.com/gemcook/go-gin-xorm-starter/infra"
 	"github.com/gemcook/go-gin-xorm-starter/util"
 	"github.com/gemcook/gognito/auth"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/go-xorm/xorm"
 	"github.com/sirupsen/logrus"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
@@ -102,6 +104,9 @@ func Start() error {
 
 	// service factoryの初期化
 	factory := factory.NewService(engine)
+
+	// override gin validator
+	binding.Validator = &model.StructValidator{}
 
 	// Ginの初期化
 	r := gin.Default()
