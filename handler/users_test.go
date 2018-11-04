@@ -49,34 +49,41 @@ var testUsers = []*model.User{
 func TestGetMe(t *testing.T) {
 	defer Setup()()
 
-	type args struct {
-		email      string
+	type fakes struct {
 		getByEmail func(email string) (*model.User, bool)
+	}
+	type args struct {
+		email string
 	}
 	tests := []struct {
 		name       string
+		fakes      fakes
 		args       args
 		wantStatus int
 		want       interface{}
 	}{
-		{"success", args{
-			email: "foo@example.com",
-			getByEmail: func(email string) (*model.User, bool) {
-				for _, v := range testUsers {
-					if v.Email == email {
-						return v, true
+		{"success",
+			fakes{
+				getByEmail: func(email string) (*model.User, bool) {
+					for _, v := range testUsers {
+						if v.Email == email {
+							return v, true
+						}
 					}
-				}
-				return nil, false
-			}},
+					return nil, false
+				},
+			},
+			args{email: "foo@example.com"},
 			http.StatusOK,
 			testUsers[0],
 		},
-		{"bad request", args{
-			email: "xxx",
-			getByEmail: func(email string) (*model.User, bool) {
-				return nil, false
-			}},
+		{"bad request",
+			fakes{
+				getByEmail: func(email string) (*model.User, bool) {
+					return nil, false
+				},
+			},
+			args{email: "xxx"},
 			http.StatusBadRequest,
 			model.NewErrorResponse("400", model.ErrorParam, fmt.Errorf("user not found")),
 		},
@@ -85,7 +92,7 @@ func TestGetMe(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Users := &UsersMock{
-				FakeGetByEmail: tt.args.getByEmail,
+				FakeGetByEmail: tt.fakes.getByEmail,
 			}
 			factory := &ServiceFactoryMock{
 				UsersMock: Users,
@@ -111,46 +118,60 @@ func TestGetMe(t *testing.T) {
 
 func TestPostUser(t *testing.T) {
 	defer Setup()()
-
-	type args struct {
-		body   interface{}
+	type fakes struct {
 		create func(email string, profile *model.UserProfile) (*model.UserPublicData, error)
+	}
+	type args struct {
+		body interface{}
 	}
 	tests := []struct {
 		name       string
+		fakes      fakes
 		args       args
 		wantStatus int
 		want       interface{}
 	}{
-		{"success", args{
-			body: model.UserCreateBody{
-				Email:       "foo@example.com",
-				UserProfile: testUsers[0].UserProfile,
+		{"success",
+			fakes{
+				create: func(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
+					return testUsers[0].GetPublicData(), nil
+				},
 			},
-			create: func(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
-				return testUsers[0].GetPublicData(), nil
-			}},
+			args{
+				body: model.UserCreateBody{
+					Email:       "foo@example.com",
+					UserProfile: testUsers[0].UserProfile,
+				},
+			},
 			http.StatusCreated,
 			testUsers[0].GetPublicData(),
 		},
-		{"bad request", args{
-			body: model.UserCreateBody{
-				Email:       "foo@example.com",
-				UserProfile: testUsers[0].UserProfile,
+		{"bad request",
+			fakes{
+				create: func(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
+					return nil, fmt.Errorf("some error")
+				},
 			},
-			create: func(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
-				return nil, fmt.Errorf("some error")
-			}},
+			args{
+				body: model.UserCreateBody{
+					Email:       "foo@example.com",
+					UserProfile: testUsers[0].UserProfile,
+				},
+			},
 			http.StatusBadRequest,
 			model.NewErrorResponse("400", model.ErrorParam, "some error"),
 		},
-		{"wrong email format", args{
-			body: struct {
-				Email string `json:"email"`
-			}{Email: "aaa"},
-			create: func(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
-				return nil, fmt.Errorf("some error")
-			}},
+		{"wrong email format",
+			fakes{
+				create: func(email string, profile *model.UserProfile) (*model.UserPublicData, error) {
+					return nil, fmt.Errorf("some error")
+				},
+			},
+			args{
+				body: struct {
+					Email string `json:"email"`
+				}{Email: "aaa"},
+			},
 			http.StatusBadRequest,
 			model.NewErrorResponse("400", model.ErrorParam, "request body mismatch", "Key: 'UserCreateBody.Email' Error:Field validation for 'Email' failed on the 'email' tag"),
 		},
@@ -159,7 +180,7 @@ func TestPostUser(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			users := &UsersMock{
-				FakeCreate: tt.args.create,
+				FakeCreate: tt.fakes.create,
 			}
 			factory := &ServiceFactoryMock{
 				UsersMock: users,
