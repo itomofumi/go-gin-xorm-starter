@@ -11,8 +11,12 @@ type EngineMock struct {
 	infra.EngineInterface
 }
 
+type KVSClientMock struct {
+	infra.KVSClientInterface
+}
+
 func TestNew(t *testing.T) {
-	factory := factory.NewService(&EngineMock{})
+	factory := factory.NewService(&EngineMock{}, &KVSClientMock{})
 	factory.NewFruits()
 	factory.NewUsers()
 }

@@ -21,13 +21,15 @@ type UsersInterface interface {
 
 // Users has users data.
 type Users struct {
-	engine infra.EngineInterface
+	engine    infra.EngineInterface
+	kvsClient infra.KVSClientInterface
 }
 
 // NewUsers initializes Users
-func NewUsers(engine infra.EngineInterface) *Users {
+func NewUsers(engine infra.EngineInterface, kvsClient infra.KVSClientInterface) *Users {
 	u := Users{
-		engine: engine,
+		engine:    engine,
+		kvsClient: kvsClient,
 	}
 	return &u
 }
@@ -35,13 +37,17 @@ func NewUsers(engine infra.EngineInterface) *Users {
 // GetByEmail returns an user who has the given email.
 func (u *Users) GetByEmail(email string) (user *model.User, ok bool) {
 	var result model.User
-	ok, err := u.engine.Where(
-		`
-		is_deleted = ? 
-		AND is_enabled = ? 
-		AND email = ?
-		`,
-		false, true, email).Get(&result)
+
+	userEmailKey := "users/emails/"
+	// try to get from cache.
+	if u.kvsClient != nil {
+		err := u.kvsClient.GetStruct(userEmailKey+email, &result)
+		if err == nil {
+			return &result, true
+		}
+	}
+
+	ok, err := u.engine.Where("is_deleted = ? AND is_enabled = ? AND email = ?", false, true, email).Get(&result)
 
 	if err != nil {
 		return nil, false
@@ -49,6 +55,12 @@ func (u *Users) GetByEmail(email string) (user *model.User, ok bool) {
 	if !ok {
 		return nil, false
 	}
+
+	// save result to cache.
+	if u.kvsClient != nil {
+		_ = u.kvsClient.SetStruct(userEmailKey+email, &result)
+	}
+
 	return &result, true
 }
 

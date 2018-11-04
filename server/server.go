@@ -81,6 +81,13 @@ func Start() error {
 		engine.Close()
 	}()
 
+	// key-value store initialization.
+	kvsClient := infra.NewKVSClient()
+	defer func() {
+		log.Println("kvsClient closed")
+		kvsClient.Close()
+	}()
+
 	accessLogWriter := &lumberjack.Logger{
 		Filename:   path.Join(logDir, "server_access.log"),
 		MaxSize:    10,   // megabytes
@@ -103,7 +110,7 @@ func Start() error {
 	gin.DefaultErrorWriter = io.MultiWriter(os.Stderr, ginErrorLogWriter)
 
 	// service factoryの初期化
-	factory := factory.NewService(engine)
+	factory := factory.NewService(engine, kvsClient)
 
 	// override gin validator
 	binding.Validator = &model.StructValidator{}
