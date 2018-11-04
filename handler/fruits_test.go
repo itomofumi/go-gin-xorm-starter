@@ -64,26 +64,30 @@ var testFruits = []*model.Fruit{
 func TestGetFruits(t *testing.T) {
 	defer Setup()()
 
-	type args struct {
+	type fakes struct {
 		getAll func() ([]*model.Fruit, error)
 	}
 	tests := []struct {
 		name       string
-		args       args
+		fakes      fakes
 		wantStatus int
 		want       interface{}
 	}{
-		{"success", args{
-			getAll: func() ([]*model.Fruit, error) {
-				return testFruits, nil
-			}},
+		{"success",
+			fakes{
+				getAll: func() ([]*model.Fruit, error) {
+					return testFruits, nil
+				},
+			},
 			http.StatusOK,
 			testFruits,
 		},
-		{"bad request", args{
-			getAll: func() ([]*model.Fruit, error) {
-				return nil, fmt.Errorf("some error")
-			}},
+		{"bad request",
+			fakes{
+				getAll: func() ([]*model.Fruit, error) {
+					return nil, fmt.Errorf("some error")
+				},
+			},
 			http.StatusBadRequest,
 			model.NewErrorResponse("400", model.ErrorParam, "some error"),
 		},
@@ -92,7 +96,7 @@ func TestGetFruits(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fruits := &FruitsMock{
-				FakeGetAll: tt.args.getAll,
+				FakeGetAll: tt.fakes.getAll,
 			}
 			factory := &ServiceFactoryMock{
 				FruitsMock: fruits,
@@ -116,35 +120,41 @@ func TestGetFruits(t *testing.T) {
 
 func TestGetFruitByID(t *testing.T) {
 	defer Setup()()
-
-	type args struct {
-		id      uint64
+	type fakes struct {
 		getByID func(id uint64) (*model.Fruit, error)
+	}
+	type args struct {
+		id uint64
 	}
 	tests := []struct {
 		name       string
+		fakes      fakes
 		args       args
 		wantStatus int
 		want       interface{}
 	}{
-		{"success", args{
-			id: 1,
-			getByID: func(id uint64) (*model.Fruit, error) {
-				for _, v := range testFruits {
-					if v.ID == id {
-						return v, nil
+		{"success",
+			fakes{
+				getByID: func(id uint64) (*model.Fruit, error) {
+					for _, v := range testFruits {
+						if v.ID == id {
+							return v, nil
+						}
 					}
-				}
-				return nil, fmt.Errorf("data not found for id = %v", id)
-			}},
+					return nil, fmt.Errorf("data not found for id = %v", id)
+				},
+			},
+			args{id: 1},
 			http.StatusOK,
 			testFruits[0],
 		},
-		{"bad request", args{
-			id: 9999,
-			getByID: func(id uint64) (*model.Fruit, error) {
-				return nil, fmt.Errorf("data not found for id = %v", id)
-			}},
+		{"bad request",
+			fakes{
+				getByID: func(id uint64) (*model.Fruit, error) {
+					return nil, fmt.Errorf("data not found for id = %v", id)
+				},
+			},
+			args{id: 9999},
 			http.StatusBadRequest,
 			model.NewErrorResponse("400", model.ErrorParam, fmt.Errorf("data not found for id = %v", 9999)),
 		},
@@ -153,7 +163,7 @@ func TestGetFruitByID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fruits := &FruitsMock{
-				FakeGetByID: tt.args.getByID,
+				FakeGetByID: tt.fakes.getByID,
 			}
 			factory := &ServiceFactoryMock{
 				FruitsMock: fruits,
@@ -179,48 +189,71 @@ func TestGetFruitByID(t *testing.T) {
 func TestPostFruit(t *testing.T) {
 	defer Setup()()
 
-	type args struct {
-		body   interface{}
+	type fakes struct {
 		create func(body *model.FruitBody) (*model.Fruit, error)
+	}
+	type args struct {
+		body interface{}
 	}
 	tests := []struct {
 		name       string
+		fakes      fakes
 		args       args
 		wantStatus int
 		want       interface{}
 	}{
-		{"success", args{
-			body: testFruits[0].FruitBody,
-			create: func(body *model.FruitBody) (*model.Fruit, error) {
-				return testFruits[0], nil
-			}},
+		{"success",
+			fakes{
+				create: func(body *model.FruitBody) (*model.Fruit, error) {
+					return testFruits[0], nil
+				},
+			},
+			args{
+				body: testFruits[0].FruitBody,
+			},
 			http.StatusCreated,
 			testFruits[0],
 		},
-		{"bad request", args{
-			body: testFruits[0].FruitBody,
-			create: func(body *model.FruitBody) (*model.Fruit, error) {
-				return nil, fmt.Errorf("some error")
-			}},
+		{"bad request",
+			fakes{
+				create: func(body *model.FruitBody) (*model.Fruit, error) {
+					return nil, fmt.Errorf("some error")
+				},
+			},
+			args{
+				body: testFruits[0].FruitBody,
+			},
 			http.StatusBadRequest,
 			model.NewErrorResponse("400", model.ErrorParam, "some error"),
 		},
-		{"wrong body", args{
-			body: struct {
-				Price string `json:"price"`
-			}{Price: "aaa"},
-			create: func(body *model.FruitBody) (*model.Fruit, error) {
-				return nil, fmt.Errorf("some error")
-			}},
+		{"wrong body type",
+			fakes{
+				create: nil,
+			},
+			args{
+				body: struct {
+					Price string `json:"price"`
+				}{Price: "aaa"},
+			},
 			http.StatusBadRequest,
 			model.NewErrorResponse("400", model.ErrorParam, "json: cannot unmarshal string into Go struct field FruitBody.price of type int"),
+		},
+		{"validation error: price is minus",
+			fakes{
+				create: nil,
+			},
+			args{
+				body: model.FruitBody{Name: ptr.String("Apple"), Price: ptr.Int(-10)},
+			},
+			http.StatusBadRequest,
+			model.NewErrorResponse("400", model.ErrorParam, "Key: 'FruitBody.Price' Error:Field validation for 'Price' failed on the 'notminus' tag"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fruits := &FruitsMock{
-				FakeCreate: tt.args.create,
+				FakeCreate: tt.fakes.create,
 			}
 			factory := &ServiceFactoryMock{
 				FruitsMock: fruits,
@@ -249,34 +282,45 @@ func TestPostFruit(t *testing.T) {
 func TestPutFruit(t *testing.T) {
 	defer Setup()()
 
-	type args struct {
-		id     uint64
-		body   *model.FruitBody
+	type fakes struct {
 		update func(fruitID uint64, body *model.FruitBody) (*model.Fruit, error)
+	}
+	type args struct {
+		id   uint64
+		body *model.FruitBody
 	}
 	tests := []struct {
 		name       string
+		fakes      fakes
 		args       args
 		wantStatus int
 		want       interface{}
 	}{
-		{"success", args{
-			id:   1,
-			body: &testFruits[0].FruitBody,
-			update: func(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
-				d := testFruits[0]
-				d.FruitBody = *body
-				return d, nil
-			}},
+		{"success",
+			fakes{
+				update: func(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
+					d := testFruits[0]
+					d.FruitBody = *body
+					return d, nil
+				},
+			},
+			args{
+				id:   1,
+				body: &testFruits[0].FruitBody,
+			},
 			http.StatusOK,
 			testFruits[0],
 		},
-		{"bad request", args{
-			id:   1,
-			body: &testFruits[0].FruitBody,
-			update: func(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
-				return nil, fmt.Errorf("some error")
-			}},
+		{"bad request",
+			fakes{
+				update: func(fruitID uint64, body *model.FruitBody) (*model.Fruit, error) {
+					return nil, fmt.Errorf("some error")
+				},
+			},
+			args{
+				id:   1,
+				body: &testFruits[0].FruitBody,
+			},
 			http.StatusBadRequest,
 			model.NewErrorResponse("400", model.ErrorParam, "some error"),
 		},
@@ -285,7 +329,7 @@ func TestPutFruit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fruits := &FruitsMock{
-				FakeUpdate: tt.args.update,
+				FakeUpdate: tt.fakes.update,
 			}
 			factory := &ServiceFactoryMock{
 				FruitsMock: fruits,
@@ -315,28 +359,38 @@ func TestPutFruit(t *testing.T) {
 func TestDeleteFruit(t *testing.T) {
 	defer Setup()()
 
-	type args struct {
-		id     uint64
+	type fakes struct {
 		delete func(fruitID uint64) error
+	}
+	type args struct {
+		id uint64
 	}
 	tests := []struct {
 		name       string
+		fakes      fakes
 		args       args
 		wantStatus int
 		want       interface{}
 	}{
-		{"success", args{
-			id:     1,
-			delete: func(fruitID uint64) error { return nil },
-		},
+		{"success",
+			fakes{
+				delete: func(fruitID uint64) error { return nil },
+			},
+			args{
+				id: 1,
+			},
 			http.StatusNoContent,
 			nil,
 		},
-		{"bad request", args{
-			id: 9999,
-			delete: func(fruitID uint64) error {
-				return fmt.Errorf("data not found for id = %v", fruitID)
-			}},
+		{"bad request",
+			fakes{
+				delete: func(fruitID uint64) error {
+					return fmt.Errorf("data not found for id = %v", fruitID)
+				},
+			},
+			args{
+				id: 9999,
+			},
 			http.StatusBadRequest,
 			model.NewErrorResponse("400", model.ErrorParam, fmt.Errorf("data not found for id = %v", 9999)),
 		},
@@ -345,7 +399,7 @@ func TestDeleteFruit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fruits := &FruitsMock{
-				FakeDelete: tt.args.delete,
+				FakeDelete: tt.fakes.delete,
 			}
 			factory := &ServiceFactoryMock{
 				FruitsMock: fruits,
