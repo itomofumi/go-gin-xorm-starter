@@ -12,7 +12,7 @@ func TestUsers_GetByEmail(t *testing.T) {
 	engine, cleanup := setupDB(t)
 	defer cleanup()
 
-	users := repository.NewUsers(engine)
+	users := repository.NewUsers(engine, NewKVSClientMock())
 
 	email := "test@example.com"
 	result, ok := users.GetByEmail(email)
@@ -28,7 +28,7 @@ func TestUsers_GetByID(t *testing.T) {
 	engine, cleanup := setupDB(t)
 	defer cleanup()
 
-	users := repository.NewUsers(engine)
+	users := repository.NewUsers(engine, NewKVSClientMock())
 
 	var id uint64 = 1
 	result, ok := users.GetByID(id)
@@ -45,7 +45,7 @@ func TestUsers_Create(t *testing.T) {
 	engine, cleanup := setupDB(t)
 	defer cleanup()
 
-	users := repository.NewUsers(engine)
+	users := repository.NewUsers(engine, NewKVSClientMock())
 
 	name := "foobar"
 	email := "foobar@example.com"
@@ -65,7 +65,7 @@ func TestUsers_Verify(t *testing.T) {
 	engine, cleanup := setupDB(t)
 	defer cleanup()
 
-	users := repository.NewUsers(engine)
+	users := repository.NewUsers(engine, NewKVSClientMock())
 
 	name := "foobar"
 	email := "foobar@example.com"
@@ -85,7 +85,7 @@ func TestUsers_Update(t *testing.T) {
 	engine, cleanup := setupDB(t)
 	defer cleanup()
 
-	users := repository.NewUsers(engine)
+	users := repository.NewUsers(engine, NewKVSClientMock())
 
 	var id uint64 = 1
 	name := "foobar"
@@ -105,7 +105,7 @@ func TestUsers_Delete(t *testing.T) {
 	engine, cleanup := setupDB(t)
 	defer cleanup()
 
-	users := repository.NewUsers(engine)
+	users := repository.NewUsers(engine, NewKVSClientMock())
 
 	var id uint64 = 1
 	email := "test@example.com"

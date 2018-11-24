@@ -9,6 +9,7 @@ starter
 starter-local
 bin/
 coverage.out
+debug
 
 ### log ###
 *.log

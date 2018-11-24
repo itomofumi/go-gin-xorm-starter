@@ -54,6 +54,39 @@ func TestMain(m *testing.M) {
 	os.Exit(ret)
 }
 
+type KVSClientMock struct {
+	store map[string]interface{}
+}
+
+func NewKVSClientMock() *KVSClientMock {
+	client := &KVSClientMock{
+		store: map[string]interface{}{},
+	}
+	return client
+}
+
+func (kc *KVSClientMock) GetStruct(key string, structPtr interface{}) error {
+	v, ok := kc.store[key]
+	if !ok {
+		return fmt.Errorf("key does not exist")
+	}
+	str := v.(string)
+	err := json.Unmarshal([]byte(str), structPtr)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (kc *KVSClientMock) SetStruct(key string, structPtr interface{}) error {
+	b, err := json.Marshal(structPtr)
+	if err != nil {
+		return err
+	}
+	kc.store[key] = string(b)
+	return nil
+}
+
 func setupInfra() (cleanup func()) {
 	setMySQLTestEnv()
 	mysqlConf := infra.LoadMySQLConfigEnv()

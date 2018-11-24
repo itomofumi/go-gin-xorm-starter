@@ -20,13 +20,15 @@ type Servicer interface {
 // Service はサービスファクトリの実装
 // インフラ層の依存情報を初期化時に注入する
 type Service struct {
-	engine infra.EngineInterface
+	engine    infra.EngineInterface
+	kvsClient infra.KVSClientInterface
 }
 
 // NewService initializes factory with injected infra.
-func NewService(engine infra.EngineInterface) *Service {
+func NewService(engine infra.EngineInterface, kvsClient infra.KVSClientInterface) *Service {
 	r := &Service{
-		engine: engine,
+		engine:    engine,
+		kvsClient: kvsClient,
 	}
 	return r
 }
@@ -39,6 +41,6 @@ func (r *Service) NewFruits() service.FruitsInterface {
 
 // NewUsers returns Users service.
 func (r *Service) NewUsers() service.UsersInterface {
-	repo := repository.NewUsers(r.engine)
+	repo := repository.NewUsers(r.engine, r.kvsClient)
 	return service.NewUsers(repo)
 }

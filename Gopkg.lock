@@ -185,6 +185,17 @@
   version = "v1.1.0"
 
 [[projects]]
+  digest = "1:dcf8316121302735c0ac84e05f4686e3b34e284444435e9a206da48d8be18cb1"
+  name = "github.com/gomodule/redigo"
+  packages = [
+    "internal",
+    "redis",
+  ]
+  pruneopts = ""
+  revision = "9c11da706d9b7902c6da69c592f75637793fe121"
+  version = "v2.0.0"
+
+[[projects]]
   digest = "1:442baaf193e432b3432e26465fb36aed31484866ddb0ee11f68caceb130e317e"
   name = "github.com/joho/godotenv"
   packages = ["."]
@@ -247,6 +258,14 @@
   pruneopts = ""
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
+
+[[projects]]
+  digest = "1:7a60165f32b09858e16d62011ac38313005d52b7a2a557491a311ad8401d5cf8"
+  name = "github.com/rafaeljusto/redigomock"
+  packages = ["."]
+  pruneopts = ""
+  revision = "7ae0511314e9946bb0c87d6d485169ab2467a290"
+  version = "v2.1"
 
 [[projects]]
   digest = "1:8cf46b6c18a91068d446e26b67512cf16f1540b45d90b28b9533706a127f0ca6"
@@ -354,8 +373,10 @@
     "github.com/go-sql-driver/mysql",
     "github.com/go-xorm/core",
     "github.com/go-xorm/xorm",
+    "github.com/gomodule/redigo/redis",
     "github.com/joho/godotenv",
     "github.com/moby/moby/client",
+    "github.com/rafaeljusto/redigomock",
     "github.com/sirupsen/logrus",
     "github.com/stretchr/testify/assert",
     "gopkg.in/natefinch/lumberjack.v2",

@@ -63,3 +63,11 @@
 [[constraint]]
   name = "gopkg.in/go-playground/validator.v9"
   version = "9.22.0"
+
+[[constraint]]
+  name = "github.com/gomodule/redigo"
+  version = "2.0.0"
+
+[[constraint]]
+  name = "github.com/rafaeljusto/redigomock"
+  version = "2.1.0"

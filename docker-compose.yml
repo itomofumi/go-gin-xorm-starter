@@ -29,5 +29,17 @@ services:
     depends_on:
       - mysql
 
+  redis:
+    image: redis:4.0.11-alpine
+    ports: 
+      - 6379:6379
+
+  redisCommander:
+    image: tenstartups/redis-commander
+    command: --redis-host redis
+    links:
+      - redis:redis
+    ports:
+      - 9081:8081
 volumes:
   mysql:
