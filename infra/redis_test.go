@@ -85,7 +85,10 @@ func TestKVSClient_SetStruct(t *testing.T) {
 		{"[success] set",
 			fields{Conn: func() redis.Conn {
 				c := redigomock.NewConn()
+				c.Command("MULTI").Expect("ok")
 				c.Command("SET").Expect("ok")
+				c.Command("EXPIRE").Expect("ok")
+				c.Command("EXEC").Expect("ok")
 				return c
 			}()},
 			args{"key1", &testObj{Name: "value1"}},
@@ -94,6 +97,10 @@ func TestKVSClient_SetStruct(t *testing.T) {
 		{"[fail] set",
 			fields{Conn: func() redis.Conn {
 				c := redigomock.NewConn()
+				c.Command("MULTI").Expect("ok")
+				c.Command("SET").ExpectError(fmt.Errorf("failed to set"))
+				c.Command("EXPIRE").Expect("ok")
+				c.Command("EXEC").Expect("ok")
 				return c
 			}()},
 			args{"key2", nil},
