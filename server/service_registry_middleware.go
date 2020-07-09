@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/gemcook/go-gin-xorm-starter/factory"
 	"github.com/gin-gonic/gin"
+	"github.com/itomofumi/go-gin-xorm-starter/factory"
 )
 
 // ServiceKeyMiddleware provides the service factory

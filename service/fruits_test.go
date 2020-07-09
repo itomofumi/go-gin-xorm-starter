@@ -4,10 +4,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/go-gin-xorm-starter/repository"
-	"github.com/gemcook/go-gin-xorm-starter/service"
-	"github.com/gemcook/ptr"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
+	"github.com/itomofumi/go-gin-xorm-starter/repository"
+	"github.com/itomofumi/go-gin-xorm-starter/service"
+	"github.com/itomofumi/ptr"
 )
 
 type fruitsRepositoryMock struct {

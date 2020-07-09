@@ -10,9 +10,9 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/gemcook/go-gin-xorm-starter/server"
-	"github.com/gemcook/go-gin-xorm-starter/util"
 	"github.com/gin-gonic/gin"
+	"github.com/itomofumi/go-gin-xorm-starter/server"
+	"github.com/itomofumi/go-gin-xorm-starter/util"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -3,8 +3,8 @@ package service
 import (
 	"fmt"
 
-	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/go-gin-xorm-starter/repository"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
+	"github.com/itomofumi/go-gin-xorm-starter/repository"
 )
 
 // UsersInterface はサポーター管理サービスです

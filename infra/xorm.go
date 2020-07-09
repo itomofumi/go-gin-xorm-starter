@@ -1,6 +1,6 @@
 package infra
 
-import "github.com/go-xorm/xorm"
+import "xorm.io/xorm"
 
 // EngineSelector provides Select function.
 type EngineSelector interface {

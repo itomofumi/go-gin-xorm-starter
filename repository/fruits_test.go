@@ -3,11 +3,11 @@ package repository_test
 import (
 	"testing"
 
-	"github.com/gemcook/ptr"
+	"github.com/itomofumi/ptr"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/go-gin-xorm-starter/repository"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
+	"github.com/itomofumi/go-gin-xorm-starter/repository"
 )
 
 func TestFruits_GetAll(t *testing.T) {

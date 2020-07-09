@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gemcook/go-gin-xorm-starter/handler"
-	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/go-gin-xorm-starter/service"
-	"github.com/gemcook/ptr"
+	"github.com/itomofumi/go-gin-xorm-starter/handler"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
+	"github.com/itomofumi/go-gin-xorm-starter/service"
+	"github.com/itomofumi/ptr"
 	"github.com/stretchr/testify/assert"
 )
 

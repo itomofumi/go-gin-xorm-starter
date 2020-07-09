@@ -7,8 +7,8 @@ Parameters:
     Default: go-gin-xorm-starter
   GitRepogitoryURL:
     Type: String
-    Description: 'The GitHub repogitory name to be integrated. (ex. https://github.com/gemcook/go-gin-xorm-starter.git)'
-    Default: 'https://github.com/gemcook/go-gin-xorm-starter.git'
+    Description: 'The GitHub repogitory name to be integrated. (ex. https://github.com/itomofumi/go-gin-xorm-starter.git)'
+    Default: 'https://github.com/itomofumi/go-gin-xorm-starter.git'
   CoverallToken:
     Type: String
     Description: 'COVERALLS (https://coveralls.io) repo token. (ex. ben8lhUJb9Kmt1rbJPUa3q1mkXaaXXnXX)'
@@ -40,7 +40,7 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_LARGE
-        Image: gemcook/golang:1.11.0
+        Image: itomofumi/golang:1.11.0
         PrivilegedMode: true
         EnvironmentVariables:
           - Type: PLAINTEXT
@@ -61,7 +61,7 @@ Resources:
           version: 0.2
           env:
             variables:
-              SRC_DIR: src/github.com/gemcook/go-gin-xorm-starter
+              SRC_DIR: src/github.com/itomofumi/go-gin-xorm-starter
           phases:
             install:
               commands:

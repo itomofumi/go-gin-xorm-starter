@@ -12,17 +12,17 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gemcook/go-gin-xorm-starter/factory"
-	"github.com/gemcook/go-gin-xorm-starter/model"
+	"github.com/itomofumi/go-gin-xorm-starter/factory"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
 
-	"github.com/gemcook/go-gin-xorm-starter/infra"
-	"github.com/gemcook/go-gin-xorm-starter/util"
-	"github.com/gemcook/gognito/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/go-xorm/xorm"
+	"github.com/itomofumi/go-gin-xorm-starter/infra"
+	"github.com/itomofumi/go-gin-xorm-starter/util"
+	"github.com/itomofumi/gognito/auth"
 	"github.com/sirupsen/logrus"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
+	"xorm.io/xorm"
 )
 
 const (
@@ -52,7 +52,7 @@ func setupDBEngine(logLevel logrus.Level) (*xorm.Engine, error) {
 	loggerSQL.Level = logLevel
 	loggerSQL.Out = io.MultiWriter(os.Stdout, sqlLogWriter)
 
-	engine.SetLogger(xorm.NewSimpleLogger(loggerSQL.Writer()))
+	engine.SetLogger(engine.Logger())
 
 	return engine, nil
 }

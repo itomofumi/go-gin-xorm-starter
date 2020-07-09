@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/gemcook/go-gin-xorm-starter/server"
-	"github.com/gemcook/go-gin-xorm-starter/util"
+	"github.com/itomofumi/go-gin-xorm-starter/server"
+	"github.com/itomofumi/go-gin-xorm-starter/util"
 )
 
 func main() {

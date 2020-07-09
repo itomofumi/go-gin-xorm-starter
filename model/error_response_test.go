@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gemcook/go-gin-xorm-starter/model"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
 	"github.com/stretchr/testify/assert"
 )
 

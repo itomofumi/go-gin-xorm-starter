@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gemcook/go-gin-xorm-starter/factory"
-	"github.com/gemcook/go-gin-xorm-starter/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/itomofumi/go-gin-xorm-starter/factory"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
 )
 
 // GetMe はログイン情報を取得します

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gemcook/go-gin-xorm-starter/infra"
-	"github.com/gemcook/go-gin-xorm-starter/util"
+	"github.com/itomofumi/go-gin-xorm-starter/infra"
+	"github.com/itomofumi/go-gin-xorm-starter/util"
 )
 
 func main() {

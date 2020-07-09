@@ -5,11 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gemcook/go-gin-xorm-starter/factory"
-	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/go-gin-xorm-starter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/itomofumi/go-gin-xorm-starter/factory"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
+	"github.com/itomofumi/go-gin-xorm-starter/service"
 	"github.com/stretchr/testify/assert"
 )
 

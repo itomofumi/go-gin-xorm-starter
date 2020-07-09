@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/go-gin-xorm-starter/util"
-	"github.com/gemcook/gognito/auth"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
+	"github.com/itomofumi/go-gin-xorm-starter/util"
+	"github.com/itomofumi/gognito/auth"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"

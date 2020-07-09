@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/gemcook/go-gin-xorm-starter/infra"
-	"github.com/go-xorm/core"
+	"github.com/itomofumi/go-gin-xorm-starter/infra"
 	"github.com/stretchr/testify/assert"
+	"xorm.io/core"
 )
 
 func setupEnv() {

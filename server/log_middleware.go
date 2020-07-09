@@ -5,8 +5,8 @@ package server
 // Based on github.com/stephenmuss/ginerus but adds more options.
 
 import (
-	"github.com/gemcook/go-gin-xorm-starter/util"
 	"github.com/gin-gonic/gin"
+	"github.com/itomofumi/go-gin-xorm-starter/util"
 	"github.com/sirupsen/logrus"
 )
 

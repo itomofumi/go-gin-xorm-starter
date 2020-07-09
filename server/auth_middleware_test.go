@@ -3,7 +3,7 @@ package server_test
 import (
 	"testing"
 
-	"github.com/gemcook/go-gin-xorm-starter/server"
+	"github.com/itomofumi/go-gin-xorm-starter/server"
 )
 
 func TestGetBearer(t *testing.T) {

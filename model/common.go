@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/gemcook/ptr"
+	"github.com/itomofumi/ptr"
 )
 
 // Common テーブル共通項目を定義

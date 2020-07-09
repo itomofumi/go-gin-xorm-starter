@@ -7,8 +7,9 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/go-xorm/core"
-	"github.com/go-xorm/xorm"
+	"xorm.io/core"
+	"xorm.io/xorm"
+	"xorm.io/xorm/log"
 )
 
 // LoadMySQLConfigEnv initializes MySQL config using Environment Variables.
@@ -40,6 +41,12 @@ func InitMySQLEngine(conf *mysql.Config) (*xorm.Engine, error) {
 	engine.SetMapper(core.GonicMapper{})
 	engine.ShowSQL(true)
 	engine.StoreEngine("InnoDb")
+	showSQL := os.Getenv("SHOW_SQL")
+	if showSQL == "0" || showSQL == "false" {
+		engine.ShowSQL(false)
+	} else {
+		engine.ShowSQL(true)
+	}
 
 	logLevel, err := parseLogLevel(os.Getenv("LOG_LEVEL"))
 	if err != nil {
@@ -51,18 +58,18 @@ func InitMySQLEngine(conf *mysql.Config) (*xorm.Engine, error) {
 }
 
 // parseLogLevel parses level string into xorm's LogLevel
-func parseLogLevel(lvl string) (core.LogLevel, error) {
+func parseLogLevel(lvl string) (log.LogLevel, error) {
 	switch strings.ToLower(lvl) {
 	case "panic", "fatal", "error":
-		return core.LOG_ERR, nil
+		return log.LOG_ERR, nil
 	case "warn", "warning":
-		return core.LOG_WARNING, nil
+		return log.LOG_WARNING, nil
 	case "info":
-		return core.LOG_INFO, nil
+		return log.LOG_INFO, nil
 	case "debug":
-		return core.LOG_DEBUG, nil
+		return log.LOG_DEBUG, nil
 	}
-	return core.LOG_DEBUG, fmt.Errorf("cannot parse \"%v\" into go-xorm/core.LogLevel", lvl)
+	return log.LOG_DEBUG, fmt.Errorf("cannot parse \"%v\" into go-xorm/core.LogLevel", lvl)
 }
 
 // RunSQLFile runs sql file.
@@ -77,7 +84,7 @@ func RunSQLFile(mysqlConnectionString, sqlFilepath string) error {
 
 	engine.SetConnMaxLifetime(time.Second)
 	engine.ShowSQL(false)
-	engine.Logger().SetLevel(core.LOG_WARNING)
+	engine.Logger().SetLevel(log.LOG_WARNING)
 
 	err = engine.Ping()
 	if err != nil {

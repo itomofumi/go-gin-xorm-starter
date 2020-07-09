@@ -3,10 +3,10 @@ package repository
 import (
 	"fmt"
 
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 
-	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/ptr"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
+	"github.com/itomofumi/ptr"
 )
 
 // FruitsInterface is a fruits repository.

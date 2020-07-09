@@ -1,6 +1,6 @@
 # go-gin-xorm-starter
 
-![CodeBuildBadge](https://codebuild.ap-northeast-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiYTFZRitkRDdWdzdscEZhaHN6R2VnVDBBaXpVNHprVFdPZGhDQVZOQVdxZ1J6SnBCeFl1ZmZncm9aZ2JYaTJkZG01VU00MUFzalhzSjU0ZGhDRlluNy84PSIsIml2UGFyYW1ldGVyU3BlYyI6ImJqS2h5cGpibDY4MzdpYi8iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master) [![Coverage Status](https://coveralls.io/repos/github/gemcook/go-gin-xorm-starter/badge.svg)](https://coveralls.io/github/gemcook/go-gin-xorm-starter)
+![CodeBuildBadge](https://codebuild.ap-northeast-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiYTFZRitkRDdWdzdscEZhaHN6R2VnVDBBaXpVNHprVFdPZGhDQVZOQVdxZ1J6SnBCeFl1ZmZncm9aZ2JYaTJkZG01VU00MUFzalhzSjU0ZGhDRlluNy84PSIsIml2UGFyYW1ldGVyU3BlYyI6ImJqS2h5cGpibDY4MzdpYi8iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master) [![Coverage Status](https://coveralls.io/repos/github/itomofumi/go-gin-xorm-starter/badge.svg)](https://coveralls.io/github/itomofumi/go-gin-xorm-starter)
 
 Golang API starter using Gin and xorm.
 
@@ -34,7 +34,7 @@ cp .env.example .env
 ### Install dependencies
 
 ```sh
-dep ensure
+go get
 ```
 
 ## Develop with local Database

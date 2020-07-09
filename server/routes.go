@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/gemcook/go-gin-xorm-starter/handler"
+	"github.com/itomofumi/go-gin-xorm-starter/handler"
 
 	"github.com/gin-gonic/gin"
 )

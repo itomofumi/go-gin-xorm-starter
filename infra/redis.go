@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gemcook/go-gin-xorm-starter/util"
 	"github.com/gomodule/redigo/redis"
+	"github.com/itomofumi/go-gin-xorm-starter/util"
 )
 
 const (

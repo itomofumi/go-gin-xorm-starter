@@ -3,8 +3,8 @@ package factory_test
 import (
 	"testing"
 
-	"github.com/gemcook/go-gin-xorm-starter/factory"
-	"github.com/gemcook/go-gin-xorm-starter/infra"
+	"github.com/itomofumi/go-gin-xorm-starter/factory"
+	"github.com/itomofumi/go-gin-xorm-starter/infra"
 )
 
 type EngineMock struct {

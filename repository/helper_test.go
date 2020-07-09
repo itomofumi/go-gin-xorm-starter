@@ -18,9 +18,9 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/moby/moby/client"
 
-	"github.com/gemcook/go-gin-xorm-starter/infra"
-	"github.com/go-xorm/core"
-	"github.com/go-xorm/xorm"
+	"github.com/itomofumi/go-gin-xorm-starter/infra"
+	"xorm.io/core"
+	"xorm.io/xorm"
 )
 
 var dockerMySQLImage = "mysql:5.7.21"

@@ -3,10 +3,10 @@ package repository
 import (
 	"fmt"
 
-	"github.com/gemcook/go-gin-xorm-starter/infra"
-	"github.com/gemcook/go-gin-xorm-starter/model"
-	"github.com/gemcook/go-gin-xorm-starter/util"
-	"github.com/gemcook/ptr"
+	"github.com/itomofumi/go-gin-xorm-starter/infra"
+	"github.com/itomofumi/go-gin-xorm-starter/model"
+	"github.com/itomofumi/go-gin-xorm-starter/util"
+	"github.com/itomofumi/ptr"
 )
 
 // UsersInterface has users data.
