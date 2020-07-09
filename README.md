@@ -6,8 +6,7 @@ Golang API starter using Gin and xorm.
 
 ## Requirements
 
-- go (>= v1.10 recommended)
-- dep
+- go (>= v1.14 recommended)
 - docker & docker-compose
 - nodemon for Live Reloading Development
 
